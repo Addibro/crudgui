@@ -1,6 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { Grid, Paper } from "@material-ui/core/";
+import { Grid, Paper, Typography } from "@material-ui/core/";
 
 const styles = theme => ({
   // root: {
@@ -21,11 +21,16 @@ function Footer(props) {
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={23}>
-        <Grid item xs={12}>
-          <Paper className={classes.paper}>@ Apper Systems AB</Paper>
+      <Paper className={classes.paper}>
+        <Grid container>
+          <Grid item xs={11}>
+            <Typography variant="caption">@ Apper Systems AB</Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <Typography variant="caption">version 0.1.0</Typography>
+          </Grid>
         </Grid>
-      </Grid>
+      </Paper>
     </div>
   );
 }
