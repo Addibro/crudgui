@@ -11,7 +11,6 @@ const styles = theme => ({
   },
   paper: {
     padding: theme.spacing.unit * 3,
-    textAlign: "left",
     color: theme.palette.text.secondary
   }
 });
@@ -27,7 +26,7 @@ function Footer(props) {
             <Typography variant="caption">@ Apper Systems AB</Typography>
           </Grid>
           <Grid item xs={1}>
-            <Typography variant="caption">version 0.1.0</Typography>
+            <Typography variant="caption">{props.version}</Typography>
           </Grid>
         </Grid>
       </Paper>
