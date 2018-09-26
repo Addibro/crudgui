@@ -1,0 +1,23 @@
+{
+  "WSS": [
+    {
+      "NAME": "Alme (Running)"
+    },
+    {
+      "NAME": "IWSAlme (Running)"
+    },
+    {
+      "NAME": "IWSJohn (Running)"
+    },
+    {
+      "NAME": "WS_MATLID (Running)"
+    },
+    {
+      "NAME": "WSERVICE (Stopped)"
+    },
+    {
+      "NAME": "Wsynon (Stopped)"
+    }
+  ],
+  "ERR": ""
+}

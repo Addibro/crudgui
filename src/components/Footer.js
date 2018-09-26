@@ -1,37 +1,38 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { Grid, Paper, Typography } from "@material-ui/core/";
+import { Grid, Typography } from "@material-ui/core/";
 
 const styles = theme => ({
-  // root: {
-  //   flexGrow: 1
-  // },
-  layout: {
-    marginBottom: 0
+  root: {
+    flexGrow: 1
   },
   paper: {
     padding: theme.spacing.unit * 3,
     color: theme.palette.text.secondary
+  },
+  footer: {
+    backgroundColor: theme.palette.background.paper,
+    padding: `${theme.spacing.unit * 5}px`
   }
 });
 
-function Footer(props) {
+const Footer = props => {
   const { classes } = props;
 
   return (
     <div className={classes.root}>
-      <Paper className={classes.paper}>
+      <footer className={classes.footer}>
         <Grid container>
           <Grid item xs={11}>
             <Typography variant="caption">@ Apper Systems AB</Typography>
           </Grid>
           <Grid item xs={1}>
-            <Typography variant="caption">{props.version}</Typography>
+            <Typography variant="caption">v. {props.version}</Typography>
           </Grid>
         </Grid>
-      </Paper>
+      </footer>
     </div>
   );
-}
+};
 
 export default withStyles(styles)(Footer);
