@@ -1,0 +1,18 @@
+{
+  "NAME": "IWSAlme",
+  "SERVICES": [
+    {
+      "NAME": "ConvertTemp (Running)"
+    },
+    {
+      "NAME": "invent (Running)"
+    },
+    {
+      "NAME": "pldata (Running)"
+    },
+    {
+      "NAME": "webserv (Running)"
+    }
+  ],
+  "ERR": ""
+}

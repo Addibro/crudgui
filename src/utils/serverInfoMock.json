@@ -1,0 +1,22 @@
+{
+  "WSINFO_LENGTH": 16,
+  "WSINFO": {
+    "INSTANCEPATH": "/www/IWSAlme",
+    "APPLICATIONSERVER": "Integrated Application Server 8.5.5.10",
+    "APPLICATIONSERVERPORTS": "10076;",
+    "SUBSYSTEM": "QHTTPSVR",
+    "JOBNAME": "IWSAlme",
+    "RUNTIMEUSERID": "ALME",
+    "JVMVERSION": "1.8",
+    "JVMTYPE": "IBM Technology for Java VM",
+    "WEBSERVICESRUNTIME": "Apache CXF 2.6",
+    "WEBSERVICESINSTALLPATH": "",
+    "CONTEXTROOT": "",
+    "JAVATOOLBOXTRACING": "Disabled",
+    "TOOLBOXTRACEOUTPUTFILE": "/www/IWSAlme/wlp/usr/servers/IWSAlme/logs/messages",
+    "SERVERLOGFILE": "/www/IWSAlme/wlp/usr/servers/IWSAlme/logs/messages",
+    "HTTPSERVER": "IWSAlme",
+    "HTTPSERVERPORTS": "10086;"
+  },
+  "ERR": ""
+}

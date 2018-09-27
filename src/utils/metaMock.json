@@ -1,0 +1,508 @@
+{
+  "DEFINITIONS_LENGTH": 7,
+  "DEFINITIONS": {
+    "VALUES": [
+      {
+        "NAME": "ARTNR",
+        "TYPE": "string",
+        "LENGTH": 10
+      },
+      {
+        "NAME": "ARTNAME",
+        "TYPE": "string",
+        "LENGTH": 20
+      },
+      {
+        "NAME": "PRICE",
+        "TYPE": "number",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "CATEGORY",
+        "TYPE": "string",
+        "LENGTH": 15
+      },
+      {
+        "NAME": "AMOUNT",
+        "TYPE": "number",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "VAL",
+        "TYPE": "number",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "SHIPDATE",
+        "TYPE": "string",
+        "LENGTH": 10
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      },
+      {
+        "NAME": "",
+        "TYPE": "",
+        "LENGTH": 0
+      }
+    ]
+  },
+  "ERR": ""
+}
