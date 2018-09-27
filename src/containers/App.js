@@ -12,26 +12,52 @@ class App extends Component {
   state = {
     version: "0.1.2",
     headerText: "CRUDGENGUI",
-    signedOn: false,
+    signedOn: true,
     error: false,
     errorMessage: "",
-    servers: [],
+    servers: [
+      {
+        NAME: "Alme (Running)"
+      },
+      {
+        NAME: "IWSAlme (Running)"
+      },
+      {
+        NAME: "IWSJohn (Running)"
+      },
+      {
+        NAME: "WS_MATLID (Running)"
+      },
+      {
+        NAME: "WSERVICE (Stopped)"
+      },
+      {
+        NAME: "Wsynon (Stopped)"
+      }
+    ],
     selectedServer: "",
     selectedService: ""
   };
 
-  handleSignOn = data => {};
+  handleSignOn = servers => {
+    this.setState({ servers: servers });
+  };
 
   onSelectedServer = data => {};
 
   render() {
-    const { signedOn, errorMessage, error } = this.state;
+    const { signedOn, errorMessage, error, servers } = this.state;
     return (
       <div className="App">
         <Header text={this.state.headerText} />
         {!signedOn && <SignIn handleSignOn={this.handleSignOn} />}
         {error && <ErrorMessage message={errorMessage} />}
-        {signedOn && <ServersMenu onSelectedServer={this.onSelectedServer} />}
+        {signedOn && (
+          <ServersMenu
+            onSelectedServer={this.onSelectedServer}
+            servers={servers}
+          />
+        )}
         <Footer version={this.state.version} />
       </div>
     );

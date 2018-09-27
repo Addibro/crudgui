@@ -1,24 +1,32 @@
-import axios from "axios";
+import btoa from "btoa";
 const webserverURL = "http://10.210.59.20:10086/web/services/webserv";
+let auth;
 
 const Fetcher = () => {
-  const getWebservers = () => axios.get(`${webserverURL}/getAll`);
+  const getWebservers = () => fetch(`${webserverURL}/getAll`, auth);
 
   const getWebserverInfo = webserver =>
-    axios.get(`${webserverURL}/${webserver}`);
+    fetch(`${webserverURL}/${webserver}`, auth);
 
   const getWebservices = webserver =>
-    axios.get(`${webserverURL}/services/${webserver}`);
+    fetch(`${webserverURL}/services/${webserver}`, auth);
 
   const getMeta = (webserver, webservice) =>
-    axios.get(`${webserverURL}/meta/${webserver}/${webservice}`);
+    fetch(`${webserverURL}/meta/${webserver}/${webservice}`, auth);
+
+  const setAuth = (username, password) =>
+    (auth = {
+      method: "GET",
+      headers: { Authorization: "Basic " + btoa(`${username}:${password}`) }
+    });
 
   return {
     getWebservers: getWebservers,
     getWebserverInfo: getWebserverInfo,
     getWebservices: getWebservices,
-    getMeta: getMeta
+    getMeta: getMeta,
+    setAuth: setAuth
   };
 };
 
-export default Fetcher;
+export default Fetcher();

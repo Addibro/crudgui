@@ -6,13 +6,9 @@ const styles = theme => ({
   root: {
     flexGrow: 1
   },
-  paper: {
-    padding: theme.spacing.unit * 3,
-    color: theme.palette.text.secondary
-  },
   footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: `${theme.spacing.unit * 5}px`
+    backgroundColor: theme.palette.grey[300],
+    padding: `${theme.spacing.unit * 4}px`
   }
 });
 

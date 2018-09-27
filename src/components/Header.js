@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import { AppBar, Toolbar, Typography } from "@material-ui/core/";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import blue from "@material-ui/core/colors/blue";
-// import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
 const styles = theme => ({
   root: {

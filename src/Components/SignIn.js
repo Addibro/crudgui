@@ -16,6 +16,7 @@ import LockIcon from "@material-ui/icons/LockOutlined";
 import { VisibilityOff, Visibility } from "@material-ui/icons/";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Fetcher from "../utils/Fetcher";
+import green from "@material-ui/core/colors/green";
 
 const styles = theme => ({
   layout: {
@@ -47,7 +48,11 @@ const styles = theme => ({
     marginTop: theme.spacing.unit
   },
   submit: {
-    marginTop: theme.spacing.unit * 3
+    marginTop: theme.spacing.unit * 3,
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[300]
+    }
   }
 });
 
@@ -71,12 +76,15 @@ class SignIn extends React.Component {
 
   handleSubmit = async event => {
     event.preventDefault(); // to bypass the default behaviour of form submits
+    Fetcher.setAuth(this.state.user, this.state.password);
     try {
-      const response = await Fetcher.getWebServers();
+      const response = await Fetcher.getWebservers();
       console.log(response.data);
       const data = "";
       this.props.handleSignOn(data);
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
     console.log(this.state);
   };
 
@@ -127,7 +135,6 @@ class SignIn extends React.Component {
                 type="submit"
                 fullWidth
                 variant="raised"
-                color="primary"
                 className={classes.submit}
               >
                 Sign in
