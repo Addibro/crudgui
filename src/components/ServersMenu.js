@@ -71,13 +71,15 @@ const styles = theme => ({
     backgroundColor: green[200],
     "&:hover": {
       backgroundColor: green[300]
-    }
+    },
+    borderRadius: theme.shape.borderRadius
   },
   stoppedServer: {
     backgroundColor: red[200],
     "&:hover": {
       backgroundColor: red[300]
-    }
+    },
+    borderRadius: theme.shape.borderRadius
   }
 });
 
@@ -89,11 +91,11 @@ class ServersMenu extends React.Component {
     info: []
   };
 
-  handleListItemClick = (event, index) => {
+  handleServerClick = (event, index) => {
     this.setState({ selectedIndex: index });
   };
 
-  handleDrawerClose = () => {
+  handleOnClose = () => {
     this.props.drawerOpen(false);
   };
 
@@ -115,10 +117,7 @@ class ServersMenu extends React.Component {
         >
           <div className={classes.toolbar}>
             <Typography variant="headline">Webservers</Typography>
-            <IconButton
-              onClick={this.handleDrawerClose}
-              style={{ marginLeft: 30 }}
-            >
+            <IconButton onClick={this.handleOnClose} style={{ marginLeft: 30 }}>
               {theme.direction === "rtl" ? (
                 <ChevronRightIcon />
               ) : (
@@ -138,12 +137,18 @@ class ServersMenu extends React.Component {
                   <ListItem
                     button
                     selected={this.state.selectedIndex === i}
-                    onClick={event => this.handleListItemClick(event, i)}
+                    onClick={event => this.handleServerClick(event, i)}
                   >
                     <ListItemIcon>
-                      <DeviceHubRounded />
+                      <DeviceHubRounded
+                        className={
+                          server.NAME.includes("(Running)")
+                            ? classes.runningServer
+                            : classes.stoppedServer
+                        }
+                      />
                     </ListItemIcon>
-                    <ListItemText primary={`${server.NAME}`} />
+                    <ListItemText primary={`${server.NAME.split(" ")[0]}`} />
                   </ListItem>
                 </React.Fragment>
               );

@@ -3,6 +3,7 @@ import "typeface-roboto";
 import Header from "../components/Header";
 import SignIn from "../components/SignIn";
 import ServersMenu from "../components/ServersMenu";
+import FilterMenu from "../components/FilterMenu";
 import Footer from "../components/Footer";
 import ErrorMessage from "../components/ErrorMessage";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -11,7 +12,7 @@ class App extends React.Component {
   state = {
     serverMenuOpen: true,
     filterMenuOpen: false,
-    version: "0.1.2",
+    version: "0.1.3",
     headerText: "CRUDGENGUI",
     signedOn: true,
     error: false,
