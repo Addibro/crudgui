@@ -1,19 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {
-  Avatar,
-  Button,
-  CssBaseline,
-  FormControl,
-  Input,
-  InputLabel,
-  Paper,
-  Typography,
-  InputAdornment,
-  IconButton
-} from "@material-ui/core";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import IconButton from "@material-ui/core/IconButton";
+import FormControl from "@material-ui/core/FormControl";
 import LockIcon from "@material-ui/icons/LockOutlined";
-import { VisibilityOff, Visibility } from "@material-ui/icons/";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import Visibility from "@material-ui/icons/Visibility";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Fetcher from "../utils/Fetcher";
 import green from "@material-ui/core/colors/green";
@@ -37,7 +35,7 @@ const styles = theme => ({
     alignItems: "center",
     padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme
       .spacing.unit * 3}px`,
-    marginBottom: theme.spacing.unit * 46.8
+    marginBottom: theme.spacing.unit * 48.7
   },
   avatar: {
     margin: theme.spacing.unit,
@@ -51,7 +49,7 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 3,
     backgroundColor: green[500],
     "&:hover": {
-      backgroundColor: green[300]
+      backgroundColor: green[700]
     }
   }
 });
@@ -94,7 +92,6 @@ class SignIn extends React.Component {
 
     return (
       <React.Fragment>
-        <CssBaseline />
         <main className={classes.layout}>
           <Paper className={classes.paper}>
             <Avatar className={classes.avatar}>

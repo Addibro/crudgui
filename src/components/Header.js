@@ -1,9 +1,18 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles";
+import withStyles from "@material-ui/core/styles/withStyles";
+import classNames from "classnames";
 import PropTypes from "prop-types";
-import { AppBar, Toolbar, Typography } from "@material-ui/core/";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import blue from "@material-ui/core/colors/blue";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+
+const drawerWidth = 240;
 
 const styles = theme => ({
   root: {
@@ -13,7 +22,28 @@ const styles = theme => ({
     flexGrow: 1
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    paddingRight: 12
+  },
+  appBarShift: {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    }),
+    paddingLeft: 12
+  },
+  menuButton: {
+    marginLeft: 12,
+    marginRight: 10
+  },
+  hide: {
+    display: "none"
   }
 });
 
@@ -23,26 +53,67 @@ const muiTheme = createMuiTheme({
   }
 });
 
-const Header = props => {
-  const { classes } = props;
-  return (
-    <div className={classes.root}>
-      <MuiThemeProvider theme={muiTheme}>
-        <AppBar position="absolute" color="primary" className={classes.appBar}>
-          <Toolbar>
-            <Typography
-              variant="headline"
-              color="inherit"
-              className={classes.grow}
-            >
-              {props.text}
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      </MuiThemeProvider>
-    </div>
-  );
-};
+class Header extends React.Component {
+  handleDrawerOpen = () => {
+    this.props.drawerOpen(true);
+  };
+
+  handleMenuDrawer = () => {
+    this.props.menuOpen(true);
+  };
+
+  render() {
+    const { classes } = this.props;
+    return (
+      <div className={classes.root}>
+        <MuiThemeProvider theme={muiTheme}>
+          <AppBar
+            position="absolute"
+            color="primary"
+            className={classNames(
+              classes.appBar,
+              this.props.serverMenuOpen &&
+                this.props.signedOn &&
+                classes.appBarShift
+            )}
+          >
+            <Toolbar disableGutters={this.props.signedOn}>
+              <IconButton
+                color="inherit"
+                aria-label="Open drawer"
+                onClick={this.handleDrawerOpen}
+                className={classNames(
+                  classes.menuButton,
+                  this.props.serverMenuOpen && classes.hide
+                )}
+              >
+                <ChevronRightIcon />
+              </IconButton>
+              <Typography
+                variant="headline"
+                color="inherit"
+                className={classes.grow}
+              >
+                {this.props.text}
+              </Typography>
+              <IconButton
+                color="inherit"
+                aria-label="Menu"
+                onClick={this.handleMenuDrawer}
+                className={classNames(
+                  classes.menuButton,
+                  !this.props.signedOn && classes.hide
+                )}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+        </MuiThemeProvider>
+      </div>
+    );
+  }
+}
 
 Header.propTypes = {
   classes: PropTypes.object.isRequired

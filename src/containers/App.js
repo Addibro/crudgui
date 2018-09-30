@@ -1,15 +1,16 @@
-import React, { Component } from "react";
-// import injectTapEventPlugin from "react-tap-event-plugin";
-import "./App.css";
+import React from "react";
 import "typeface-roboto";
 import Header from "../components/Header";
 import SignIn from "../components/SignIn";
 import ServersMenu from "../components/ServersMenu";
 import Footer from "../components/Footer";
 import ErrorMessage from "../components/ErrorMessage";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
-class App extends Component {
+class App extends React.Component {
   state = {
+    serverMenuOpen: true,
+    filterMenuOpen: false,
     version: "0.1.2",
     headerText: "CRUDGENGUI",
     signedOn: true,
@@ -45,21 +46,54 @@ class App extends Component {
 
   onSelectedServer = data => {};
 
+  changeHeader = text => {
+    this.setState({ headerText: text });
+  };
+
+  drawerOpen = condition => {
+    this.setState({ serverMenuOpen: condition });
+  };
+
+  menuOpen = condition => {
+    this.setState({ filterMenuOpen: condition });
+  };
+
   render() {
-    const { signedOn, errorMessage, error, servers } = this.state;
+    const {
+      signedOn,
+      errorMessage,
+      error,
+      servers,
+      serverMenuOpen,
+      filterMenuOpen
+    } = this.state;
+
     return (
-      <div className="App">
-        <Header text={this.state.headerText} />
-        {!signedOn && <SignIn handleSignOn={this.handleSignOn} />}
-        {error && <ErrorMessage message={errorMessage} />}
-        {signedOn && (
-          <ServersMenu
-            onSelectedServer={this.onSelectedServer}
-            servers={servers}
+      <React.Fragment>
+        <CssBaseline />
+        <div className="App">
+          <Header
+            drawerOpen={this.drawerOpen}
+            menuOpen={this.menuOpen}
+            signedOn={signedOn}
+            text={this.state.headerText}
+            serverMenuOpen={serverMenuOpen}
           />
-        )}
-        <Footer version={this.state.version} />
-      </div>
+          {signedOn && (
+            <ServersMenu
+              changeHeader={() => this.chageHeader("Servers")}
+              onSelectedServer={this.onSelectedServer}
+              servers={servers}
+              serverMenuOpen={serverMenuOpen}
+              drawerOpen={this.drawerOpen}
+              signedOn={signedOn}
+            />
+          )}
+          {!signedOn && <SignIn handleSignOn={this.handleSignOn} />}
+          {error && <ErrorMessage message={errorMessage} />}
+          {!signedOn && <Footer version={this.state.version} />}
+        </div>
+      </React.Fragment>
     );
   }
 }

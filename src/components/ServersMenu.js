@@ -1,31 +1,30 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import withStyles from "@material-ui/core/styles/withStyles";
+import classNames from "classnames";
 import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
 import DeviceHubRounded from "@material-ui/icons/DeviceHubRounded";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ListSubheader
-} from "@material-ui/core";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
+import blue from "@material-ui/core/colors/blue";
+import green from "@material-ui/core/colors/green";
+import red from "@material-ui/core/colors/red";
+import Services from "./Services";
+import IconButton from "@material-ui/core/IconButton";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 
 const drawerWidth = 240;
 
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: 858,
+    height: window.innerHeight,
     zIndex: 1,
     overflow: "hidden",
     position: "relative",
@@ -33,7 +32,23 @@ const styles = theme => ({
   },
   drawerPaper: {
     position: "relative",
-    width: drawerWidth
+    // whiteSpace: "",
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.easeIn,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  drawerPaperClose: {
+    overflowX: "hidden",
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.easeIn,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    width: theme.spacing.unit * 7,
+    [theme.breakpoints.up("sm")]: {
+      width: theme.spacing.unit * 9
+    }
   },
   content: {
     flexGrow: 1,
@@ -41,36 +56,78 @@ const styles = theme => ({
     padding: theme.spacing.unit * 3,
     minWidth: 0 // So the Typography noWrap works
   },
-  toolbar: theme.mixins.toolbar,
+  toolbar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: "0 8px",
+    ...theme.mixins.toolbar
+  },
   progress: {
-    margin: theme.spacing.unit * 2
+    margin: theme.spacing.unit,
+    color: blue[500]
+  },
+  runningServer: {
+    backgroundColor: green[200],
+    "&:hover": {
+      backgroundColor: green[300]
+    }
+  },
+  stoppedServer: {
+    backgroundColor: red[200],
+    "&:hover": {
+      backgroundColor: red[300]
+    }
   }
 });
 
 class ServersMenu extends React.Component {
   state = {
-    selectedIndex: -1,
-    loading: true
+    selectedIndex: 0,
+    loading: false,
+    services: [{ service1: "Service1" }],
+    info: []
   };
 
   handleListItemClick = (event, index) => {
     this.setState({ selectedIndex: index });
   };
 
+  handleDrawerClose = () => {
+    this.props.drawerOpen(false);
+  };
+
   render() {
-    const { classes } = this.props;
+    const { classes, theme } = this.props;
+    const { services, info } = this.state;
 
     return (
       <div className={classes.root}>
-        <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
-          <div className={classes.toolbar} />
-          <List
-            component="nav"
-            subheader={
-              <ListSubheader component="div">Webservers</ListSubheader>
-            }
-          >
-            <Divider />
+        <Drawer
+          variant="permanent"
+          classes={{
+            paper: classNames(
+              classes.drawerPaper,
+              !this.props.serverMenuOpen && classes.drawerPaperClose
+            )
+          }}
+          open={this.props.serverMenuOpen}
+        >
+          <div className={classes.toolbar}>
+            <Typography variant="headline">Webservers</Typography>
+            <IconButton
+              onClick={this.handleDrawerClose}
+              style={{ marginLeft: 30 }}
+            >
+              {theme.direction === "rtl" ? (
+                <ChevronRightIcon />
+              ) : (
+                <ChevronLeftIcon />
+              )}
+            </IconButton>
+          </div>
+          <Divider />
+          <List component="nav">
             {this.props.servers.map((server, i) => {
               return this.state.loading ? (
                 <ListItem key={`loader${i}`}>
@@ -88,16 +145,16 @@ class ServersMenu extends React.Component {
                     </ListItemIcon>
                     <ListItemText primary={`${server.NAME}`} />
                   </ListItem>
-                  <Divider />
                 </React.Fragment>
               );
             })}
           </List>
         </Drawer>
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          <Typography noWrap>{"Hello"}</Typography>
-        </main>
+        <Services
+          selected={this.state.selectedIndex}
+          // info={info}
+          services={services}
+        />
       </div>
     );
   }
@@ -107,48 +164,4 @@ ServersMenu.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(ServersMenu);
-
-class AlertDialog extends React.Component {
-  state = {
-    open: false,
-    title: "",
-    content: ""
-  };
-
-  handleOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  render() {
-    return (
-      <div>
-        <Dialog
-          open={this.state.open}
-          onClose={this.handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{this.state.title}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {this.state.content}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={this.handleClose} color="primary" autoFocus>
-              Ok
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-    );
-  }
-}
+export default withStyles(styles, { withTheme: true })(ServersMenu);
