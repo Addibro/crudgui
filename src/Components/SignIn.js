@@ -74,14 +74,22 @@ class SignIn extends React.Component {
 
   handleSubmit = async event => {
     event.preventDefault(); // to bypass the default behaviour of form submits
-    Fetcher.setAuth(this.state.user, this.state.password);
+
     try {
+      const validationResponse = await Fetcher.validate(
+        this.state.user,
+        this.state.password
+      );
+      if (validationResponse.status === 200) {
+        this.props.handleSignOn();
+      }
       const response = await Fetcher.getWebservers();
-      console.log(response.data);
-      const data = "";
-      this.props.handleSignOn(data);
+      console.log(response);
+      if (response.status === 200) {
+        const json = await response.json();
+      }
     } catch (err) {
-      console.log(err);
+      console.log("Failed fetch error", err);
     }
     console.log(this.state);
   };

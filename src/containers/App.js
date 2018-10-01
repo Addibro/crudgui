@@ -14,7 +14,7 @@ class App extends React.Component {
     filterMenuOpen: false,
     version: "0.1.3",
     headerText: "CRUDGENGUI",
-    signedOn: true,
+    signedOn: false,
     error: false,
     errorMessage: "",
     servers: [
@@ -41,8 +41,8 @@ class App extends React.Component {
     selectedService: ""
   };
 
-  handleSignOn = servers => {
-    this.setState({ servers: servers });
+  handleSignOn = condition => {
+    this.setState({ signedOn: condition });
   };
 
   onSelectedServer = data => {};
@@ -91,8 +91,8 @@ class App extends React.Component {
             />
           )}
           {!signedOn && <SignIn handleSignOn={this.handleSignOn} />}
-          {error && <ErrorMessage message={errorMessage} />}
           {!signedOn && <Footer version={this.state.version} />}
+          {error && <ErrorMessage message={errorMessage} />}
         </div>
       </React.Fragment>
     );

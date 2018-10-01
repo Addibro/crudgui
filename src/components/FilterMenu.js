@@ -7,9 +7,7 @@ import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
 
 const styles = {
-  list: {
-    width: 240
-  }
+  list: { width: 240 }
 };
 
 class FilterMenu extends React.Component {
@@ -37,8 +35,6 @@ class FilterMenu extends React.Component {
   }
 }
 
-FilterMenu.PropTypes = {
-  classes: PropTypes.object.isRequired
-};
+FilterMenu.PropTypes = { classes: PropTypes.object.isRequired };
 
 export default withStyles(styles)(FilterMenu);
