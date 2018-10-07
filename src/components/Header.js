@@ -11,6 +11,7 @@ import blue from "@material-ui/core/colors/blue";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
 const drawerWidth = 240;
 
@@ -27,7 +28,7 @@ const styles = theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     }),
-    paddingRight: 12
+    paddingLeft: 12
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -35,15 +36,13 @@ const styles = theme => ({
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
-    }),
-    paddingLeft: 12
-  },
-  menuButton: {
-    marginLeft: 12,
-    marginRight: 10
+    })
   },
   hide: {
     display: "none"
+  },
+  header: {
+    paddingLeft: 10
   }
 });
 
@@ -64,6 +63,7 @@ class Header extends React.Component {
 
   render() {
     const { classes } = this.props;
+
     return (
       <div className={classes.root}>
         <MuiThemeProvider theme={muiTheme}>
@@ -78,25 +78,28 @@ class Header extends React.Component {
             )}
           >
             <Toolbar disableGutters={this.props.signedOn}>
-              <IconButton
-                color="inherit"
-                aria-label="Open drawer"
-                onClick={this.handleDrawerOpen}
-                className={classNames(
-                  classes.menuButton,
-                  this.props.serverMenuOpen && classes.hide
-                )}
-              >
-                <ChevronRightIcon />
-              </IconButton>
+              {this.props.signedOn ? (
+                <IconButton
+                  color="inherit"
+                  aria-label="Open drawer"
+                  onClick={this.handleDrawerOpen}
+                  className={classes.menuButton}
+                >
+                  {this.props.serverMenuOpen ? (
+                    <ChevronLeftIcon />
+                  ) : (
+                    <ChevronRightIcon />
+                  )}
+                </IconButton>
+              ) : null}
               <Typography
                 variant="headline"
                 color="inherit"
-                className={classes.grow}
+                className={classNames(classes.grow, classes.header)}
               >
                 {this.props.text}
               </Typography>
-              <IconButton
+              {/* <IconButton
                 color="inherit"
                 aria-label="Menu"
                 onClick={this.handleMenuDrawer}
@@ -106,7 +109,7 @@ class Header extends React.Component {
                 )}
               >
                 <MenuIcon />
-              </IconButton>
+              </IconButton> */}
             </Toolbar>
           </AppBar>
         </MuiThemeProvider>

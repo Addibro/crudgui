@@ -1,13 +1,14 @@
-import btoa from "btoa";
-import serverInfo from "./serverInfoMock.json";
-import webservers from "./serversMock.json";
+import servers from "./serversMock.json";
 const webserverURL = "http://10.210.59.20:10086/web/services/webserv";
-let auth;
 
 const Fetcher = () => {
-  const validate = (username, password) => {};
+  const AbortController = window.AbortController;
 
-  const getWebservers = () => fetch(`${webserverURL}/getAll`);
+  const authorize = (username, password) =>
+    fetch(`${webserverURL}/validate/${username}/${password}`);
+
+  const getWebservers = () =>
+    fetch(`${webserverURL}/getAll`, { signal: AbortController.signal });
 
   const getWebserverInfo = webserver => fetch(`${webserverURL}/${webserver}`);
 
@@ -17,19 +18,15 @@ const Fetcher = () => {
   const getMeta = (webserver, webservice) =>
     fetch(`${webserverURL}/meta/${webserver}/${webservice}`);
 
-  const setAuth = (username, password) =>
-    (auth = {
-      method: "GET",
-      headers: { Authorization: "Basic " + btoa(`${username}:${password}`) }
-    });
-
+  const getJsonFromResponse = response => response.json();
   return {
     getWebservers: getWebservers,
     getWebserverInfo: getWebserverInfo,
     getWebservices: getWebservices,
-    validate: validate,
+    authorize: authorize,
     getMeta: getMeta,
-    setAuth: setAuth
+    getJsonFromResponse: getJsonFromResponse,
+    AbortController: AbortController
   };
 };
 
