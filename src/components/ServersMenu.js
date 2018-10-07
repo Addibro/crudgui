@@ -148,7 +148,6 @@ class ServersMenu extends React.Component {
         const webserviceJson = await Promise.all(
           webserviceResponse.map(Fetcher.getJsonFromResponse)
         );
-        console.log(webserviceJson);
         this.props.handleWebservices(webserviceJson, infoJson);
       } else {
         throw Error(body.message);
@@ -168,13 +167,6 @@ class ServersMenu extends React.Component {
       );
     });
     this.props.handleServerSearch(filteredServers);
-  };
-
-  getIndex = () => {
-    for (let i = 0; i < this.props.servers.length; i++) {
-      const element = this.props.servers[i];
-      if (this.props.selectedServer === element.NAME) return i;
-    }
   };
 
   componentDidMount = () => this.fetchServers();
@@ -230,7 +222,7 @@ class ServersMenu extends React.Component {
                         <ListItem
                           className={classes.listItem}
                           button
-                          selected={this.getIndex() === i}
+                          selected={this.props.selectedServer === server.NAME}
                           onClick={event =>
                             this.handleServerClick(event, i, server.NAME)
                           }

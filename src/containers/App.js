@@ -22,7 +22,7 @@ const styles = theme => ({
 
 class App extends React.Component {
   state = {
-    signedOn: false,
+    signedOn: true,
     serverMenuOpen: true,
     filterMenuOpen: false,
     error: false,
@@ -31,10 +31,10 @@ class App extends React.Component {
     filteredServers: [],
     serverInfo: [],
     serversLoading: true,
+    selectedServer: "",
     selectedServerIndex: -1,
     services: [],
     servicesLoading: true,
-    selectedServer: "",
     selectedService: "",
     headerText: "CRUDGENGUI",
     version: "0.1.4"
@@ -75,6 +75,14 @@ class App extends React.Component {
     });
   };
 
+  getIndex = () => {
+    for (let i = 0; i < this.state.servers.length; i++) {
+      const element = this.state.servers[i];
+      if (this.state.selectedServer === element.NAME) return i;
+    }
+    return -1;
+  };
+
   render() {
     const { classes } = this.props;
     const {
@@ -99,6 +107,7 @@ class App extends React.Component {
           {signedOn && (
             <div className={classes.root}>
               <ServersMenu
+                getIndex={this.getIndex}
                 handleWebservers={this.handleWebservers}
                 handleServerSearch={this.handleServerSearch}
                 handleWebservices={this.handleWebservices}
@@ -107,6 +116,7 @@ class App extends React.Component {
                 {...this.state}
               />
               <Services
+                getIndex={this.getIndex}
                 onSelectedServer={this.onSelectedServer}
                 selected={this.state.selectedServerIndex}
                 {...this.state}
