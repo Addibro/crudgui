@@ -1,0 +1,215 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "invent APIs",
+    "description": "APIs available for invent",
+    "version": "1.0.0"
+  },
+  "basePath": "/web/services/invent",
+  "tags": [
+    {
+      "name": "invent APIs",
+      "description": "APIs available for invent"
+    }
+  ],
+  "definitions": {
+    "DATADS": {
+      "type": "object",
+      "properties": {
+        "ARTNR": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "ARTNAME": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "PRICE": {
+          "type": "number"
+        },
+        "CATEGORY": {
+          "type": "string",
+          "maxLength": 15
+        },
+        "AMOUNT": {
+          "type": "number"
+        },
+        "VAL": {
+          "type": "number"
+        },
+        "SHIPDATE": {
+          "type": "string",
+          "maxLength": 10
+        }
+      }
+    },
+    "SELECTINVENTResult": {
+      "type": "object",
+      "properties": {
+        "SELECTDS": {
+          "$ref": "#/definitions/DATADS"
+        }
+      }
+    },
+    "SELECTALLINVENTResult": {
+      "type": "object",
+      "properties": {
+        "SELECTDS": {
+          "type": "array",
+          "maxItems": 9999,
+          "items": {
+            "$ref": "#/definitions/DATADS"
+          }
+        }
+      }
+    },
+    "INSERTINVENTResult": {
+      "type": "object",
+      "properties": {
+        "RETURNDS": {
+          "$ref": "#/definitions/DATADS"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/select/{LIM}/{OFF}/{VAR}": {
+      "get": {
+        "tags": ["invent APIs"],
+        "operationId": "SELECTALLINVENT",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "LIM",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "pattern": "\\d+"
+          },
+          {
+            "name": "OFF",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "pattern": "\\d+"
+          },
+          {
+            "name": "VAR",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 20
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/SELECTALLINVENTResult"
+            }
+          }
+        }
+      }
+    },
+    "/insert": {
+      "post": {
+        "tags": ["invent APIs"],
+        "operationId": "INSERTINVENT",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DATADS"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/INSERTINVENTResult"
+            }
+          }
+        }
+      }
+    },
+    "/update": {
+      "put": {
+        "tags": ["invent APIs"],
+        "operationId": "UPDATEINVENT",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DATADS"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/delete/{ID}": {
+      "delete": {
+        "tags": ["invent APIs"],
+        "operationId": "DELETEINVENT",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "ID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    },
+    "/{ID}": {
+      "get": {
+        "tags": ["invent APIs"],
+        "operationId": "SELECTINVENT",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "ID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/SELECTINVENTResult"
+            }
+          }
+        }
+      }
+    }
+  }
+}

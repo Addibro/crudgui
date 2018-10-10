@@ -52,71 +52,59 @@ const muiTheme = createMuiTheme({
   }
 });
 
-class Header extends React.Component {
-  handleDrawerOpen = () => {
-    this.props.drawerOpen(true);
-  };
+const Header = props => {
+  const { classes } = props;
 
-  handleMenuDrawer = () => {
-    this.props.menuOpen(true);
-  };
-
-  render() {
-    const { classes } = this.props;
-
-    return (
-      <div className={classes.root}>
-        <MuiThemeProvider theme={muiTheme}>
-          <AppBar
-            position="absolute"
-            color="primary"
-            className={classNames(
-              classes.appBar,
-              this.props.serverMenuOpen &&
-                this.props.signedOn &&
-                classes.appBarShift
-            )}
-          >
-            <Toolbar disableGutters={this.props.signedOn}>
-              {this.props.signedOn ? (
-                <IconButton
-                  color="inherit"
-                  aria-label="Open drawer"
-                  onClick={this.handleDrawerOpen}
-                  className={classes.menuButton}
-                >
-                  {this.props.serverMenuOpen ? (
-                    <ChevronLeftIcon />
-                  ) : (
-                    <ChevronRightIcon />
-                  )}
-                </IconButton>
-              ) : null}
-              <Typography
-                variant="headline"
+  return (
+    <div className={classes.root}>
+      <MuiThemeProvider theme={muiTheme}>
+        <AppBar
+          position="absolute"
+          color="primary"
+          className={classNames(
+            classes.appBar,
+            props.serverMenuOpen && props.signedOn && classes.appBarShift
+          )}
+        >
+          <Toolbar disableGutters={props.signedOn}>
+            {props.signedOn ? (
+              <IconButton
                 color="inherit"
-                className={classNames(classes.grow, classes.header)}
+                aria-label="Open drawer"
+                onClick={() => props.toggleDrawer()}
+                className={classes.menuButton}
               >
-                {this.props.text}
-              </Typography>
-              {/* <IconButton
+                {props.serverMenuOpen ? (
+                  <ChevronLeftIcon />
+                ) : (
+                  <ChevronRightIcon />
+                )}
+              </IconButton>
+            ) : null}
+            <Typography
+              variant="headline"
+              color="inherit"
+              className={classNames(classes.grow, classes.header)}
+            >
+              {props.text}
+            </Typography>
+            {/* <IconButton
                 color="inherit"
                 aria-label="Menu"
                 onClick={this.handleMenuDrawer}
                 className={classNames(
                   classes.menuButton,
-                  !this.props.signedOn && classes.hide
+                  !props.signedOn && classes.hide
                 )}
               >
                 <MenuIcon />
               </IconButton> */}
-            </Toolbar>
-          </AppBar>
-        </MuiThemeProvider>
-      </div>
-    );
-  }
-}
+          </Toolbar>
+        </AppBar>
+      </MuiThemeProvider>
+    </div>
+  );
+};
 
 Header.propTypes = {
   classes: PropTypes.object.isRequired

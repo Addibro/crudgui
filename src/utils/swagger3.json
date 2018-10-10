@@ -1,0 +1,292 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "crudgen APIs",
+    "description": "APIs available for crudgen",
+    "version": "1.0.0"
+  },
+  "basePath": "/web/services/crudgen",
+  "tags": [
+    {
+      "name": "crudgen APIs",
+      "description": "APIs available for crudgen"
+    }
+  ],
+  "definitions": {
+    "WEBSERVICEOPTIONS": {
+      "type": "object",
+      "properties": {
+        "OPTIONLIBRARY": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "OPTIONPROCEDURENAME": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "OPTIONSERVICEPROGRAM": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "OPTIONWEBSERVICENAME": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "OPTIONSERVER": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "OPTIONSELECTMODULE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "OPTIONSELECTALLMODULE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "OPTIONINSERTMODULE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "OPTIONUPDATEMODULE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "OPTIONDELETEMODULE": {
+          "type": "string",
+          "maxLength": 1
+        }
+      }
+    },
+    "COLUMNS": {
+      "type": "object",
+      "properties": {
+        "NAME": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "TYPE": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "LENGTH": {
+          "type": "string",
+          "maxLength": 5
+        },
+        "DECIMALS": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "IDENTITY": {
+          "type": "string",
+          "maxLength": 3
+        },
+        "GEN": {
+          "type": "string",
+          "maxLength": 20
+        }
+      }
+    },
+    "OPTIONS": {
+      "type": "object",
+      "properties": {
+        "TEMPLATELIB": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "FILE": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "INLIBRARY": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "PREFIX": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "FETCHCOL": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "SELECTMODULE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "SELECTALLMODULE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "DELETEMODULE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "INSERTMODULE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "UPDATEMODULE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "PROCEDURENAME": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "KEYCOLUMN": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "COLUMNCOUNT": {
+          "type": "integer"
+        },
+        "DELETESOURCE": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "DELETEMODULES": {
+          "type": "string",
+          "maxLength": 1
+        },
+        "OUTLIBRARY": {
+          "type": "string",
+          "maxLength": 10
+        },
+        "COMPILE": {
+          "type": "string",
+          "maxLength": 1
+        }
+      }
+    },
+    "CREATEPROCEDURESInput": {
+      "type": "object",
+      "properties": {
+        "COLUMNDS": {
+          "type": "array",
+          "maxItems": 800,
+          "items": {
+            "$ref": "#/definitions/COLUMNS"
+          }
+        },
+        "OPT": {
+          "$ref": "#/definitions/OPTIONS"
+        }
+      }
+    },
+    "GENERATEMETAResult": {
+      "type": "object",
+      "properties": {
+        "OUTPUTCOLUMNS": {
+          "type": "array",
+          "maxItems": 800,
+          "items": {
+            "$ref": "#/definitions/COLUMNS"
+          }
+        }
+      }
+    },
+    "CREATEWEBSERVICEInput": {
+      "type": "object",
+      "properties": {
+        "WSOPT": {
+          "$ref": "#/definitions/WEBSERVICEOPTIONS"
+        }
+      }
+    },
+    "CREATEWEBSERVICEResult": {
+      "type": "object",
+      "properties": {
+        "WSMESSAGE": {
+          "type": "string",
+          "maxLength": 300
+        }
+      }
+    }
+  },
+  "paths": {
+    "/createws": {
+      "post": {
+        "tags": ["crudgen APIs"],
+        "operationId": "CREATEWEBSERVICE",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CREATEWEBSERVICEInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/CREATEWEBSERVICEResult"
+            }
+          }
+        }
+      }
+    },
+    "/{inLib}/{inFile}": {
+      "get": {
+        "tags": ["crudgen APIs"],
+        "operationId": "GENERATEMETA",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "inLib",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 10
+          },
+          {
+            "name": "inFile",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/GENERATEMETAResult"
+            }
+          }
+        }
+      }
+    },
+    "/create": {
+      "post": {
+        "tags": ["crudgen APIs"],
+        "operationId": "CREATEPROCEDURES",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CREATEPROCEDURESInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
+    }
+  }
+}

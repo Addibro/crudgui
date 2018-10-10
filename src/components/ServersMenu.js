@@ -4,7 +4,10 @@ import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
 import classNames from "classnames";
 import Drawer from "@material-ui/core/Drawer";
+// Icons
 import DeviceHubRounded from "@material-ui/icons/DeviceHubRounded";
+import Settings from "@material-ui/icons/Settings";
+import Close from "@material-ui/icons/Close";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -19,7 +22,6 @@ import red from "@material-ui/core/colors/red";
 import Services from "./Services";
 import IconButton from "@material-ui/core/IconButton";
 import Input from "@material-ui/core/Input";
-import Settings from "@material-ui/icons/Settings";
 import Grow from "@material-ui/core/Grow";
 
 const drawerWidth = 240;
@@ -120,44 +122,6 @@ class ServersMenu extends React.Component {
   handleServerClick = (event, index, server) =>
     this.props.onSelectedServer(index, server);
 
-  handleOnClose = () => this.props.drawerOpen(false);
-
-  fetchServers = async () => {
-    let body;
-    try {
-      const webserversResponse = await Fetcher.getWebservers();
-      if (webserversResponse.status === 200) {
-        const body = await webserversResponse.json();
-        // const servers = webserversResponse.servers;
-        // console.log(body.WSS);
-        this.props.handleWebservers(body.WSS);
-        // this.props.handleWebservers(servers.WSS);
-        const infoResponse = await Promise.all(
-          body.WSS.map(server => server.NAME.split(" ")[0]).map(
-            Fetcher.getWebserverInfo
-          )
-        );
-        const infoJson = await Promise.all(
-          infoResponse.map(Fetcher.getJsonFromResponse)
-        );
-        const webserviceResponse = await Promise.all(
-          body.WSS.map(server => server.NAME.split(" ")[0]).map(
-            Fetcher.getWebservices
-          )
-        );
-        const webserviceJson = await Promise.all(
-          webserviceResponse.map(Fetcher.getJsonFromResponse)
-        );
-        this.props.handleWebservices(webserviceJson, infoJson);
-      } else {
-        throw Error(body.message);
-      }
-    } catch (error) {
-      if (error.name === "AbortError") return;
-      throw Error(error);
-    }
-  };
-
   filter = event => {
     const filteredServers = this.props.servers.filter(server => {
       return (
@@ -168,11 +132,6 @@ class ServersMenu extends React.Component {
     });
     this.props.handleServerSearch(filteredServers);
   };
-
-  componentDidMount = () => this.fetchServers();
-
-  componentWillUnmount = () => Fetcher.AbortController.abort();
-
   render() {
     const { classes } = this.props;
 
@@ -204,7 +163,11 @@ class ServersMenu extends React.Component {
                     root: classes.inputRoot,
                     input: classes.inputInput
                   }}
-                />
+                >
+                  <IconButton>
+                    <Close />
+                  </IconButton>
+                </Input>
               </div>
             </div>
             <Divider />
@@ -227,7 +190,19 @@ class ServersMenu extends React.Component {
                             this.handleServerClick(event, i, server.NAME)
                           }
                         >
-                          <Tooltip title={onlyName} placement="right-end">
+                          {!this.props.serverMenuOpen ? (
+                            <Tooltip title={onlyName} placement="right-end">
+                              <ListItemIcon>
+                                <DeviceHubRounded
+                                  className={
+                                    server.NAME.includes("(Running)")
+                                      ? classes.runningServer
+                                      : classes.stoppedServer
+                                  }
+                                />
+                              </ListItemIcon>
+                            </Tooltip>
+                          ) : (
                             <ListItemIcon>
                               <DeviceHubRounded
                                 className={
@@ -237,7 +212,7 @@ class ServersMenu extends React.Component {
                                 }
                               />
                             </ListItemIcon>
-                          </Tooltip>
+                          )}
                           <ListItemText
                             classes={{ primary: classes.primary }}
                             primary={`${onlyName}`}
@@ -249,7 +224,6 @@ class ServersMenu extends React.Component {
                 })
               )}
             </List>
-            <Divider />
           </Drawer>
         </div>
       </React.Fragment>

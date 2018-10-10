@@ -9,7 +9,7 @@ import FilterMenu from "../components/FilterMenu";
 import Footer from "../components/Footer";
 import ErrorMessage from "../components/ErrorMessage";
 import CssBaseline from "@material-ui/core/CssBaseline";
-
+import Fetcher from "../utils/Fetcher";
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -21,12 +21,27 @@ const styles = theme => ({
 });
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.authorized = this.authorized.bind(this);
+    this.onSelectedServer = this.onSelectedServer.bind(this);
+    this.handleSelectedService = this.handleSelectedService.bind(this);
+    this.toggleDrawer = this.toggleDrawer.bind(this);
+    this.menuOpen = this.menuOpen.bind(this);
+    this.handleWebservers = this.handleWebservers.bind(this);
+    this.handleServerSearch = this.handleServerSearch.bind(this);
+    this.handleWebservices = this.handleWebservices.bind(this);
+    this.handleErrorMessageClose = this.handleErrorMessageClose.bind(this);
+    this.handleError = this.handleError.bind(this);
+  }
+
   state = {
     signedOn: true,
     serverMenuOpen: true,
     filterMenuOpen: false,
     error: false,
-    errorMessage: "",
+    errorReceived: [],
+    errorMessageOpen: false,
     servers: [],
     filteredServers: [],
     serverInfo: [],
@@ -37,8 +52,31 @@ class App extends React.Component {
     servicesLoading: true,
     selectedService: "",
     headerText: "CRUDGENGUI",
-    version: "0.1.4"
+    version: "0.2.0"
   };
+
+  async componentDidMount() {
+    try {
+      const webserversResponse = await Fetcher.getWebservers();
+      this.handleWebservers(webserversResponse.WSS);
+      const infoResponse = await Promise.all(
+        webserversResponse.WSS.map(server => server.NAME.split(" ")[0]).map(
+          Fetcher.getWebserverInfo
+        )
+      );
+      const webserviceResponse = await Promise.all(
+        webserversResponse.WSS.map(server => server.NAME.split(" ")[0]).map(
+          Fetcher.getWebservices
+        )
+      );
+      this.handleWebservices(webserviceResponse, infoResponse);
+    } catch (error) {
+      if (error.name === "AbortError") return;
+      this.handleError(error);
+    }
+  }
+
+  // componentWillUnmount = () => Fetcher.AbortController.abort();
 
   authorized = condition => {
     this.setState({ signedOn: condition });
@@ -48,7 +86,10 @@ class App extends React.Component {
     this.setState({ selectedServerIndex: index, selectedServer: server });
   };
 
-  drawerOpen = () => {
+  handleSelectedService = service =>
+    this.setState({ selectedService: service });
+
+  toggleDrawer = () => {
     this.setState({ serverMenuOpen: !this.state.serverMenuOpen });
   };
 
@@ -62,6 +103,14 @@ class App extends React.Component {
       filteredServers: webservers,
       serversLoading: false
     });
+  };
+
+  handleError = error => {
+    this.setState({ errorReceived: error, errorMessageOpen: true });
+  };
+
+  handleErrorMessageClose = () => {
+    this.setState({ errorMessageOpen: false });
   };
 
   handleServerSearch = filteredServers =>
@@ -87,7 +136,8 @@ class App extends React.Component {
     const { classes } = this.props;
     const {
       signedOn,
-      errorMessage,
+      errorReceived,
+      errorMessageOpen,
       error,
       serverMenuOpen,
       filterMenuOpen
@@ -98,7 +148,7 @@ class App extends React.Component {
         <CssBaseline />
         <div className="App">
           <Header
-            drawerOpen={this.drawerOpen}
+            toggleDrawer={this.toggleDrawer}
             menuOpen={this.menuOpen}
             text={this.state.headerText}
             signedOn={signedOn}
@@ -111,21 +161,28 @@ class App extends React.Component {
                 handleWebservers={this.handleWebservers}
                 handleServerSearch={this.handleServerSearch}
                 handleWebservices={this.handleWebservices}
+                handleError={this.handleError}
                 onSelectedServer={this.onSelectedServer}
-                drawerOpen={this.drawerOpen}
+                toggleDrawer={this.toggleDrawer}
                 {...this.state}
               />
               <Services
                 getIndex={this.getIndex}
+                handleSelectedService={this.handleSelectedService}
                 onSelectedServer={this.onSelectedServer}
                 selected={this.state.selectedServerIndex}
+                handleError={this.handleError}
                 {...this.state}
               />
             </div>
           )}
           {!signedOn && <SignIn authorized={this.authorized} />}
           {!signedOn && <Footer version={this.state.version} />}
-          {error && <ErrorMessage message={errorMessage} />}
+          <ErrorMessage
+            handleErrorMessageClose={this.handleErrorMessageClose}
+            open={errorMessageOpen}
+            message={errorReceived}
+          />
         </div>
       </React.Fragment>
     );

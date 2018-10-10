@@ -1,0 +1,59 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "GetAgeRP APIs",
+    "description": "APIs available for GetAgeRP",
+    "version": "1.0.0"
+  },
+  "basePath": "/web/services/GetAgeRP",
+  "tags": [
+    {
+      "name": "GetAgeRP APIs",
+      "description": "APIs available for GetAgeRP"
+    }
+  ],
+  "definitions": {
+    "GETAGEResult": {
+      "type": "object",
+      "properties": {
+        "MESSAGE": {
+          "type": "string",
+          "maxLength": 132
+        }
+      }
+    }
+  },
+  "paths": {
+    "/{name}/{born}": {
+      "get": {
+        "tags": ["GetAgeRP APIs"],
+        "operationId": "GETAGE",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "maxLength": 30
+          },
+          {
+            "name": "born",
+            "in": "path",
+            "required": true,
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/GETAGEResult"
+            }
+          }
+        }
+      }
+    }
+  }
+}

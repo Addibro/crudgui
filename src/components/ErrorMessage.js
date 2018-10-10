@@ -28,16 +28,15 @@ const styles = theme => ({
 });
 
 class ErrorMessage extends React.Component {
-  state = {
-    open: true
+  handleClose = (event, reason) => {
+    // if (reason === "clickaway") {
+    //   return;
+    // }
+    this.props.handleErrorMessageClose();
   };
 
-  handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    this.setState({ open: false });
+  componentWillUnmount = () => {
+    this.props.handleErrorMessageClose();
   };
 
   render() {
@@ -49,8 +48,8 @@ class ErrorMessage extends React.Component {
             vertical: "bottom",
             horizontal: "left"
           }}
-          open={this.state.open}
-          autoHideDuration={6000}
+          open={this.props.open}
+          autoHideDuration={4000}
           onClose={this.handleClose}
           ContentProps={{
             "aria-describedby": "message-id"
@@ -83,7 +82,7 @@ class ErrorMessage extends React.Component {
 ErrorMessage.propTypes = {
   classes: PropTypes.object.isRequired,
   className: PropTypes.string,
-  message: PropTypes.node,
+  message: PropTypes.string,
   onClose: PropTypes.func,
   variant: PropTypes.oneOf(["success", "warning", "error", "info"]).isRequired
 };
