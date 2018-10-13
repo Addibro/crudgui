@@ -83,8 +83,8 @@ ErrorMessage.propTypes = {
   classes: PropTypes.object.isRequired,
   className: PropTypes.string,
   message: PropTypes.string,
-  onClose: PropTypes.func,
-  variant: PropTypes.oneOf(["success", "warning", "error", "info"]).isRequired
+  onClose: PropTypes.func
+  // variant: PropTypes.oneOf(["success", "warning", "error", "info"]).isRequired
 };
 
 export default withStyles(styles)(ErrorMessage);

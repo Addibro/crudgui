@@ -10,6 +10,17 @@ import Footer from "../components/Footer";
 import ErrorMessage from "../components/ErrorMessage";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Fetcher from "../utils/Fetcher";
+import DisplayTable from "../components/DisplayTable";
+
+const columns = ["Name", "Company", "City", "State"];
+
+const data = [
+  ["Joe James", "Test Corp", "Yonkers", "NY"],
+  ["John Walsh", "Test Corp", "Hartford", "CT"],
+  ["Bob Herm", "Test Corp", "Tampa", "FL"],
+  ["James Houston", "Test Corp", "Dallas", "TX"]
+];
+
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -39,18 +50,19 @@ class App extends React.Component {
     signedOn: true,
     serverMenuOpen: true,
     filterMenuOpen: false,
-    error: false,
-    errorReceived: [],
+    errorReceived: "",
     errorMessageOpen: false,
     servers: [],
     filteredServers: [],
     serverInfo: [],
     serversLoading: true,
     selectedServer: "",
-    selectedServerIndex: -1,
     services: [],
     servicesLoading: true,
     selectedService: "",
+    selectedMethod: "",
+    data: [],
+    columns: [],
     headerText: "CRUDGENGUI",
     version: "0.2.0"
   };
@@ -72,7 +84,7 @@ class App extends React.Component {
       this.handleWebservices(webserviceResponse, infoResponse);
     } catch (error) {
       if (error.name === "AbortError") return;
-      this.handleError(error);
+      this.handleError(error.message);
     }
   }
 
@@ -82,8 +94,8 @@ class App extends React.Component {
     this.setState({ signedOn: condition });
   };
 
-  onSelectedServer = (index, server) => {
-    this.setState({ selectedServerIndex: index, selectedServer: server });
+  onSelectedServer = server => {
+    this.setState({ selectedServer: server });
   };
 
   handleSelectedService = service =>
@@ -124,6 +136,10 @@ class App extends React.Component {
     });
   };
 
+  setColumns = columns => this.setState({ columns: columns });
+
+  setData = data => this.setState({ data: data });
+
   getIndex = () => {
     for (let i = 0; i < this.state.servers.length; i++) {
       const element = this.state.servers[i];
@@ -138,8 +154,8 @@ class App extends React.Component {
       signedOn,
       errorReceived,
       errorMessageOpen,
-      error,
       serverMenuOpen,
+      selectedMethod,
       filterMenuOpen
     } = this.state;
 
@@ -166,14 +182,17 @@ class App extends React.Component {
                 toggleDrawer={this.toggleDrawer}
                 {...this.state}
               />
-              <Services
-                getIndex={this.getIndex}
-                handleSelectedService={this.handleSelectedService}
-                onSelectedServer={this.onSelectedServer}
-                selected={this.state.selectedServerIndex}
-                handleError={this.handleError}
-                {...this.state}
-              />
+              {selectedMethod === "" ? (
+                <Services
+                  getIndex={this.getIndex}
+                  handleSelectedService={this.handleSelectedService}
+                  onSelectedServer={this.onSelectedServer}
+                  handleError={this.handleError}
+                  {...this.state}
+                />
+              ) : (
+                <DisplayTable title="Test" data={data} columns={columns} />
+              )}
             </div>
           )}
           {!signedOn && <SignIn authorized={this.authorized} />}

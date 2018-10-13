@@ -82,7 +82,7 @@ const Header = props => {
               </IconButton>
             ) : null}
             <Typography
-              variant="headline"
+              variant="h5"
               color="inherit"
               className={classNames(classes.grow, classes.header)}
             >

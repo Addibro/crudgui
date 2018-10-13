@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import PropTypes from "prop-types";
-import withStyles from "@material-ui/core/styles/withStyles";
+import { withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -17,7 +17,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
-import lighten from "@material-ui/core/styles/colorManipulator/lighten";
+import { lighten } from "@material-ui/core/styles/colorManipulator";
 
 let counter = 0;
 function createData(name, calories, fat, carbs, protein) {
@@ -52,16 +52,16 @@ function getSorting(order, orderBy) {
 }
 
 const rows = [
-  {
-    id: "name",
-    numeric: false,
-    disablePadding: true,
-    label: "Dessert (100g serving)"
-  },
-  { id: "calories", numeric: true, disablePadding: false, label: "Calories" },
-  { id: "fat", numeric: true, disablePadding: false, label: "Fat (g)" },
-  { id: "carbs", numeric: true, disablePadding: false, label: "Carbs (g)" },
-  { id: "protein", numeric: true, disablePadding: false, label: "Protein (g)" }
+  // {
+  //   id: "name",
+  //   numeric: false,
+  //   disablePadding: true,
+  //   label: "Dessert (100g serving)"
+  // },
+  // { id: "calories", numeric: true, disablePadding: false, label: "Calories" },
+  // { id: "fat", numeric: true, disablePadding: false, label: "Fat (g)" },
+  // { id: "carbs", numeric: true, disablePadding: false, label: "Carbs (g)" },
+  // { id: "protein", numeric: true, disablePadding: false, label: "Protein (g)" }
 ];
 
 class EnhancedTableHead extends React.Component {
@@ -93,7 +93,7 @@ class EnhancedTableHead extends React.Component {
               <TableCell
                 key={row.id}
                 numeric={row.numeric}
-                padding={row.disablePadding ? "none" : "default"}
+                // padding={row.disablePadding ? "none" : "default"}
                 sortDirection={orderBy === row.id ? order : false}
               >
                 <Tooltip
@@ -163,12 +163,12 @@ let EnhancedTableToolbar = props => {
     >
       <div className={classes.title}>
         {numSelected > 0 ? (
-          <Typography color="inherit" variant="subheading">
+          <Typography color="inherit" variant="subtitle1">
             {numSelected} selected
           </Typography>
         ) : (
-          <Typography variant="title" id="tableTitle">
-            Nutrition
+          <Typography variant="h6" id="tableTitle">
+            Test
           </Typography>
         )}
       </div>
@@ -202,17 +202,23 @@ EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 const styles = theme => ({
   root: {
     width: "100%",
-    marginTop: theme.spacing.unit * 3
+    marginTop: theme.spacing.unit * 8,
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing.unit * 7
+    }
   },
   table: {
-    minWidth: 1020
+    minWidth: 500
   },
   tableWrapper: {
     overflowX: "auto"
+  },
+  pagination: {
+    display: "flex"
   }
 });
 
-class EnhancedTable extends React.Component {
+class DisplayTable extends React.Component {
   state = {
     order: "asc",
     orderBy: "calories",
@@ -328,6 +334,7 @@ class EnhancedTable extends React.Component {
           </Table>
         </div>
         <TablePagination
+          className={classes.pagination}
           component="div"
           count={data.length}
           rowsPerPage={rowsPerPage}
@@ -346,8 +353,8 @@ class EnhancedTable extends React.Component {
   }
 }
 
-EnhancedTable.propTypes = {
+DisplayTable.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(EnhancedTable);
+export default withStyles(styles)(DisplayTable);

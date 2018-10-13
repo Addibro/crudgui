@@ -119,8 +119,10 @@ const styles = theme => ({
 });
 
 class ServersMenu extends React.Component {
-  handleServerClick = (event, index, server) =>
-    this.props.onSelectedServer(index, server);
+  state = {
+    mobileOpen: false
+  };
+  handleServerClick = server => this.props.onSelectedServer(server);
 
   filter = event => {
     const filteredServers = this.props.servers.filter(server => {
@@ -177,7 +179,7 @@ class ServersMenu extends React.Component {
                   <CircularProgress className={classes.progress} />
                 </ListItem>
               ) : (
-                this.props.filteredServers.map((server, i) => {
+                this.props.filteredServers.map(server => {
                   const onlyName = server.NAME.split(" ")[0];
                   return (
                     <React.Fragment key={server.NAME}>
@@ -186,11 +188,9 @@ class ServersMenu extends React.Component {
                           className={classes.listItem}
                           button
                           selected={this.props.selectedServer === server.NAME}
-                          onClick={event =>
-                            this.handleServerClick(event, i, server.NAME)
-                          }
+                          onClick={() => this.handleServerClick(server.NAME)}
                         >
-                          {!this.props.serverMenuOpen ? (
+                          {!this.props.serverMenuOpen ? ( // show tooltip only when menu closed
                             <Tooltip title={onlyName} placement="right-end">
                               <ListItemIcon>
                                 <DeviceHubRounded

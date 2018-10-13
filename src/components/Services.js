@@ -50,10 +50,10 @@ const Services = props => {
       <div className={classes.toolbar} />
       {props.selectedServer === "" ? (
         <React.Fragment>
-          <Typography className={classes.typography} variant="display3" noWrap>
+          <Typography className={classes.typography} variant="h2" noWrap>
             Welcome
           </Typography>
-          <Typography variant="subheading">
+          <Typography variant="subtitle1">
             Select a server you wish to work with
           </Typography>
         </React.Fragment>
@@ -61,11 +61,11 @@ const Services = props => {
         <CircularProgress className={classes.progress} />
       ) : serverInfo[getIndex()].ERR === "" ? (
         <div>
-          <Typography variant="display1">
+          <Typography variant="h4">
             {services[getIndex()].NAME}
             's webservices
           </Typography>
-          <Typography variant="subheading">
+          <Typography variant="subtitle1">
             Runtime user ID:&nbsp;
             <Chip
               avatar={
@@ -76,7 +76,7 @@ const Services = props => {
               label={serverInfo[getIndex()].WSINFO.RUNTIMEUSERID}
             />
           </Typography>
-          <Typography variant="subheading">
+          <Typography variant="subtitle1">
             Application server port:&nbsp;
             <Chip
               label={serverInfo[getIndex()].WSINFO.APPLICATIONSERVERPORTS.slice(
@@ -85,7 +85,7 @@ const Services = props => {
               )}
             />
           </Typography>
-          <Typography variant="subheading">
+          <Typography variant="subtitle1">
             Http port:&nbsp;
             <Chip
               label={serverInfo[getIndex()].WSINFO.HTTPSERVERPORTS.slice(0, -1)}
@@ -99,9 +99,9 @@ const Services = props => {
               <Grow in key={service.NAME}>
                 <Grid
                   item
-                  // xs={12}
+                  xs={12}
                   sm={12}
-                  lg={6}
+                  lg={12}
                   key={service.NAME.split(" ")[0]}
                 >
                   <ServicePanel
@@ -110,8 +110,13 @@ const Services = props => {
                     serviceName={service.NAME}
                     selectedServer={props.selectedServer}
                     selectedService={props.selectedService}
-                    info={"Info about this service"}
+                    getIndex={props.getIndex}
                     className={classes.panel}
+                    port={serverInfo[getIndex()].WSINFO.HTTPSERVERPORTS.slice(
+                      0,
+                      -1
+                    )}
+                    {...props}
                   />
                 </Grid>
               </Grow>
@@ -120,11 +125,11 @@ const Services = props => {
         </div>
       ) : (
         <div>
-          <Typography variant="display1">
+          <Typography variant="h4">
             {services[getIndex()].NAME}
             's webservices
           </Typography>
-          <Typography variant="subheading" color="error">
+          <Typography variant="subtitle1" color="error">
             {serverInfo[getIndex()].ERR}
           </Typography>
         </div>

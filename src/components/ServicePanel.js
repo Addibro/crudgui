@@ -36,6 +36,9 @@ const styles = theme => ({
   progress: {
     margin: theme.spacing.unit,
     color: blue[500]
+  },
+  column: {
+    flexBasis: "33.33%"
   }
 });
 
@@ -45,8 +48,46 @@ class ServicePanel extends React.Component {
     loadingSwagger: true,
     failedFetch: true,
     basePath: "",
-    definitions: {},
+    definitions: [],
     paths: []
+  };
+
+  onMethodClick = async ({ name, path, method, parameters, reference }) => {
+    let resultSchemaOfMethod;
+    try {
+      const port = this.props.port;
+      let response;
+      switch (method) {
+        case "get":
+          resultSchemaOfMethod = await SwaggerParser.resultOfGet(
+            reference,
+            this.state.definitions
+          );
+          response = await Fetcher.doGetMethod(
+            port,
+            this.state.basePath,
+            path,
+            name,
+            parameters
+          );
+          break;
+        case "put":
+          response = await Fetcher.doPutMethod();
+          break;
+        case "post":
+          response = await Fetcher.doPostMethod();
+          break;
+        case "delete":
+          response = await Fetcher.doDelMethod();
+          break;
+        default:
+          this.props.handleError("Unrecognizable method type");
+      }
+      console.log(response);
+      console.log(resultSchemaOfMethod);
+    } catch (error) {
+      this.props.handleError(error.message);
+    }
   };
 
   handlePanelClick = () => {
@@ -74,18 +115,31 @@ class ServicePanel extends React.Component {
         console.log(response);
         this.setState({
           basePath: response.basePath,
-          // definitions: response.definitions,
+          definitions: SwaggerParser.getDefinitions(response),
           paths: SwaggerParser.getPaths(response),
           loadingSwagger: false
         });
       } else {
-        this.setState({ loadingSwagger: false, failedFetch: true });
+        this.setState({ failedFetch: true });
         this.props.handleError(prepareSwaggerResponse.ERR);
       }
     } catch (error) {
-      this.setState({ loadingSwagger: false, failedFetch: true });
+      this.setState({ failedFetch: true });
       this.props.handleError(error.message);
+    } finally {
+      this.setState({ loadingSwagger: false });
     }
+  };
+
+  getQueryString = path => {
+    let queryString = "/?";
+    path.parameters.map(param => (queryString += "{" + param.name + "}&"));
+    if (queryString.length > 30) {
+      queryString = queryString.slice(0, 30);
+      queryString += "...";
+      return queryString;
+    }
+    return queryString.slice(0, queryString.length - 1);
   };
 
   render() {
@@ -112,27 +166,68 @@ class ServicePanel extends React.Component {
                 Fetch failed
               </Typography>
             ) : (
-              <div>
-                <List
-                  component="nav"
-                  subheader={
-                    <ListSubheader component="div">Methods</ListSubheader>
-                  }
-                >
-                  {this.state.paths.map(path => (
-                    <div>
-                      <ListItem button>
-                        <ListItemIcon>
-                          <PlayArrow />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={path.path + ": " + path.method}
-                        />
-                      </ListItem>
-                    </div>
-                  ))}
-                </List>
-              </div>
+              <React.Fragment>
+                <div className={classes.column}>
+                  <List
+                    component="nav"
+                    subheader={
+                      <ListSubheader component="div">Methods</ListSubheader>
+                    }
+                  >
+                    {this.state.paths.map(path => (
+                      <div>
+                        <Grow in>
+                          <ListItem
+                            button
+                            onClick={() => this.onMethodClick(path)}
+                          >
+                            <ListItemIcon>
+                              <PlayArrow />
+                            </ListItemIcon>
+                            <ListItemText primary={path.name} />
+                          </ListItem>
+                        </Grow>
+                      </div>
+                    ))}
+                  </List>
+                </div>
+                <div style={{ flexBasis: "25%" }}>
+                  <List
+                    component="nav"
+                    subheader={
+                      <ListSubheader component="div">Type</ListSubheader>
+                    }
+                  >
+                    {this.state.paths.map(path => (
+                      <div>
+                        <ListItem>
+                          <ListItemText primary={path.method.toUpperCase()} />
+                        </ListItem>
+                      </div>
+                    ))}
+                  </List>
+                </div>
+                <div style={{ flexBasis: "45%" }}>
+                  <List
+                    component="nav"
+                    subheader={
+                      <ListSubheader component="div">Template</ListSubheader>
+                    }
+                  >
+                    {this.state.paths.map(path => (
+                      <div>
+                        <ListItem>
+                          {path.query ? (
+                            <ListItemText primary={this.getQueryString(path)} />
+                          ) : (
+                            <ListItemText primary={path.path} />
+                          )}
+                        </ListItem>
+                      </div>
+                    ))}
+                  </List>
+                </div>
+              </React.Fragment>
             )}
           </ExpansionPanelDetails>
         </ExpansionPanel>
