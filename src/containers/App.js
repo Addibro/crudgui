@@ -52,7 +52,7 @@ class App extends React.Component {
     query: "",
     parameterVariables: [],
     headerText: "CRUDGENGUI",
-    version: "0.2.0"
+    version: "0.2.5"
   };
 
   async componentDidMount() {
