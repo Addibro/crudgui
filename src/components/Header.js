@@ -49,6 +49,9 @@ const styles = theme => ({
 const muiTheme = createMuiTheme({
   palette: {
     primary: { main: blue[500] }
+  },
+  typography: {
+    useNextVariants: true
   }
 });
 
@@ -88,17 +91,6 @@ const Header = props => {
             >
               {props.text}
             </Typography>
-            {/* <IconButton
-                color="inherit"
-                aria-label="Menu"
-                onClick={this.handleMenuDrawer}
-                className={classNames(
-                  classes.menuButton,
-                  !props.signedOn && classes.hide
-                )}
-              >
-                <MenuIcon />
-              </IconButton> */}
           </Toolbar>
         </AppBar>
       </MuiThemeProvider>

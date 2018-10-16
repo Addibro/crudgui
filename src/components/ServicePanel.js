@@ -3,7 +3,11 @@ import SwaggerParser from "../utils/SwaggerParser";
 
 import React from "react";
 import PropTypes from "prop-types";
-import withStyles from "@material-ui/core/styles/withStyles";
+import {
+  withStyles,
+  createMuiTheme,
+  MuiThemeProvider
+} from "@material-ui/core/styles";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -21,6 +25,13 @@ import ListItemText from "@material-ui/core/ListItemText";
 import PlayArrow from "@material-ui/icons/PlayArrow";
 import Button from "@material-ui/core/Button";
 import blue from "@material-ui/core/colors/blue";
+import green from "@material-ui/core/colors/green";
+
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true
+  }
+});
 
 const styles = theme => ({
   root: {
@@ -38,7 +49,7 @@ const styles = theme => ({
     color: blue[500]
   },
   column: {
-    flexBasis: "33.33%"
+    flexBasis: "25%"
   }
 });
 
@@ -52,39 +63,27 @@ class ServicePanel extends React.Component {
     paths: []
   };
 
-  onMethodClick = async ({ name, path, method, parameters, reference }) => {
+  onMethodClick = pathObject => {
+    const { method, reference } = pathObject;
     let resultSchemaOfMethod;
     try {
-      const port = this.props.port;
-      let response;
       switch (method) {
         case "get":
-          resultSchemaOfMethod = await SwaggerParser.resultOfGet(
+          resultSchemaOfMethod = SwaggerParser.resultOfGet(
             reference,
             this.state.definitions
           );
-          response = await Fetcher.doGetMethod(
-            port,
-            this.state.basePath,
-            path,
-            name,
-            parameters
-          );
-          break;
-        case "put":
-          response = await Fetcher.doPutMethod();
-          break;
-        case "post":
-          response = await Fetcher.doPostMethod();
-          break;
-        case "delete":
-          response = await Fetcher.doDelMethod();
+
           break;
         default:
           this.props.handleError("Unrecognizable method type");
       }
-      console.log(response);
-      console.log(resultSchemaOfMethod);
+      this.props.setRequestOptions(
+        resultSchemaOfMethod,
+        this.state.basePath,
+        pathObject
+      );
+      this.props.handleGetFormOpen();
     } catch (error) {
       this.props.handleError(error.message);
     }
@@ -131,7 +130,7 @@ class ServicePanel extends React.Component {
     }
   };
 
-  getQueryString = path => {
+  formatQueryString = path => {
     let queryString = "/?";
     path.parameters.map(param => (queryString += "{" + param.name + "}&"));
     if (queryString.length > 30) {
@@ -139,99 +138,101 @@ class ServicePanel extends React.Component {
       queryString += "...";
       return queryString;
     }
-    return queryString.slice(0, queryString.length - 1);
+    return queryString.slice(0, -1);
   };
 
   render() {
     const { classes } = this.props;
 
     return (
-      <div className={classes.root}>
-        <ExpansionPanel>
-          <ExpansionPanelSummary
-            onClick={this.handlePanelClick}
-            expandIcon={<ExpandMoreIcon />}
-          >
-            <Typography className={classes.heading}>
-              {this.props.serviceName}
-            </Typography>
-          </ExpansionPanelSummary>
-          <Divider />
-          <ExpansionPanelDetails>
-            {this.state.loadingSwagger ? (
-              <CircularProgress className={classes.progress} size={30} />
-            ) : this.state.failedFetch ? (
-              <Typography variant="caption" color="error">
-                <br />
-                Fetch failed
+      <MuiThemeProvider theme={theme}>
+        <div className={classes.root}>
+          <ExpansionPanel>
+            <ExpansionPanelSummary
+              onClick={this.handlePanelClick}
+              expandIcon={<ExpandMoreIcon />}
+            >
+              <Typography className={classes.heading}>
+                {this.props.serviceName}
               </Typography>
-            ) : (
-              <React.Fragment>
-                <div className={classes.column}>
-                  <List
-                    component="nav"
-                    subheader={
-                      <ListSubheader component="div">Methods</ListSubheader>
-                    }
-                  >
-                    {this.state.paths.map(path => (
-                      <div>
-                        <Grow in>
+            </ExpansionPanelSummary>
+            <Divider />
+            <ExpansionPanelDetails>
+              {this.state.loadingSwagger ? (
+                <CircularProgress className={classes.progress} size={30} />
+              ) : this.state.failedFetch ? (
+                <Typography color="error">
+                  <br />
+                  Fetch failed
+                </Typography>
+              ) : (
+                <React.Fragment>
+                  <div className={classes.column}>
+                    <List
+                      component="nav"
+                      subheader={
+                        <ListSubheader component="div">Methods</ListSubheader>
+                      }
+                    >
+                      {this.state.paths.map(path => (
+                        <div key={path.name}>
                           <ListItem
                             button
                             onClick={() => this.onMethodClick(path)}
                           >
                             <ListItemIcon>
-                              <PlayArrow />
+                              <PlayArrow style={{ color: green[500] }} />
                             </ListItemIcon>
                             <ListItemText primary={path.name} />
                           </ListItem>
-                        </Grow>
-                      </div>
-                    ))}
-                  </List>
-                </div>
-                <div style={{ flexBasis: "25%" }}>
-                  <List
-                    component="nav"
-                    subheader={
-                      <ListSubheader component="div">Type</ListSubheader>
-                    }
-                  >
-                    {this.state.paths.map(path => (
-                      <div>
-                        <ListItem>
-                          <ListItemText primary={path.method.toUpperCase()} />
-                        </ListItem>
-                      </div>
-                    ))}
-                  </List>
-                </div>
-                <div style={{ flexBasis: "45%" }}>
-                  <List
-                    component="nav"
-                    subheader={
-                      <ListSubheader component="div">Template</ListSubheader>
-                    }
-                  >
-                    {this.state.paths.map(path => (
-                      <div>
-                        <ListItem>
-                          {path.query ? (
-                            <ListItemText primary={this.getQueryString(path)} />
-                          ) : (
-                            <ListItemText primary={path.path} />
-                          )}
-                        </ListItem>
-                      </div>
-                    ))}
-                  </List>
-                </div>
-              </React.Fragment>
-            )}
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-      </div>
+                        </div>
+                      ))}
+                    </List>
+                  </div>
+                  <div style={{ flexBasis: "25%" }}>
+                    <List
+                      component="nav"
+                      subheader={
+                        <ListSubheader component="div">Type</ListSubheader>
+                      }
+                    >
+                      {this.state.paths.map((path, i) => (
+                        <div key={path.method + i}>
+                          <ListItem>
+                            <ListItemText primary={path.method.toUpperCase()} />
+                          </ListItem>
+                        </div>
+                      ))}
+                    </List>
+                  </div>
+                  <div style={{ flexBasis: "50%" }}>
+                    <List
+                      component="nav"
+                      subheader={
+                        <ListSubheader component="div">Template</ListSubheader>
+                      }
+                    >
+                      {this.state.paths.map(path => (
+                        <div key={path.path}>
+                          <ListItem>
+                            {path.query ? (
+                              <ListItemText
+                                primary={this.formatQueryString(path)}
+                              />
+                            ) : (
+                              <ListItemText primary={path.path} />
+                            )}
+                          </ListItem>
+                        </div>
+                      ))}
+                    </List>
+                  </div>
+                </React.Fragment>
+              )}
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+        </div>
+      </MuiThemeProvider>
     );
   }
 }

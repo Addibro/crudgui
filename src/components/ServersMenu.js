@@ -2,8 +2,8 @@ import Fetcher from "../utils/Fetcher";
 import React from "react";
 import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import classNames from "classnames";
-import Drawer from "@material-ui/core/Drawer";
 // Icons
 import DeviceHubRounded from "@material-ui/icons/DeviceHubRounded";
 import Settings from "@material-ui/icons/Settings";
@@ -15,16 +15,22 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
+import Drawer from "@material-ui/core/Drawer";
 import Divider from "@material-ui/core/Divider";
 import blue from "@material-ui/core/colors/blue";
 import green from "@material-ui/core/colors/green";
 import red from "@material-ui/core/colors/red";
-import Services from "./Services";
 import IconButton from "@material-ui/core/IconButton";
 import Input from "@material-ui/core/Input";
 import Grow from "@material-ui/core/Grow";
 
 const drawerWidth = 240;
+
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true
+  }
+});
 
 const styles = theme => ({
   root: {
@@ -119,10 +125,7 @@ const styles = theme => ({
 });
 
 class ServersMenu extends React.Component {
-  state = {
-    mobileOpen: false
-  };
-  handleServerClick = server => this.props.onSelectedServer(server);
+  onServerClick = server => this.props.handleSelectedServer(server);
 
   filter = event => {
     const filteredServers = this.props.servers.filter(server => {
@@ -134,64 +137,87 @@ class ServersMenu extends React.Component {
     });
     this.props.handleServerSearch(filteredServers);
   };
+
   render() {
     const { classes } = this.props;
 
     return (
-      <React.Fragment>
-        <div className={classes.root}>
-          <Drawer
-            variant="permanent"
-            classes={{
-              paper: classNames(
-                classes.drawerPaper,
-                !this.props.serverMenuOpen && classes.drawerPaperClose
-              )
-            }}
-            open={this.props.serverMenuOpen}
-          >
-            <div className={classes.toolbar}>
-              <div className={classes.settings}>
-                <IconButton>
-                  <Settings />
-                </IconButton>
-              </div>
-              <div className={classes.search}>
-                <Input
-                  onChange={this.filter}
-                  placeholder="Search servers..."
-                  disableUnderline
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput
-                  }}
-                >
-                  <IconButton>
-                    <Close />
-                  </IconButton>
-                </Input>
-              </div>
-            </div>
-            <Divider />
-            <List component="nav" className={classes.root}>
-              {this.props.serversLoading ? (
-                <ListItem>
-                  <CircularProgress className={classes.progress} />
-                </ListItem>
+      <MuiThemeProvider theme={theme}>
+        <React.Fragment>
+          <div className={classes.root}>
+            <Drawer
+              variant="permanent"
+              classes={{
+                paper: classNames(
+                  classes.drawerPaper,
+                  !this.props.serverMenuOpen && classes.drawerPaperClose
+                )
+              }}
+              open={this.props.serverMenuOpen}
+            >
+              {!this.props.serversLoading ? (
+                <div className={classes.toolbar}>
+                  <div className={classes.settings}>
+                    <IconButton>
+                      <Settings />
+                    </IconButton>
+                  </div>
+                  <div className={classes.search}>
+                    <Input
+                      onChange={this.filter}
+                      placeholder="Search servers..."
+                      disableUnderline
+                      classes={{
+                        root: classes.inputRoot,
+                        input: classes.inputInput
+                      }}
+                    >
+                      <IconButton>
+                        <Close />
+                      </IconButton>
+                    </Input>
+                  </div>
+                </div>
               ) : (
-                this.props.filteredServers.map(server => {
-                  const onlyName = server.NAME.split(" ")[0];
-                  return (
-                    <React.Fragment key={server.NAME}>
-                      <Grow in>
-                        <ListItem
-                          className={classes.listItem}
-                          button
-                          selected={this.props.selectedServer === server.NAME}
-                          onClick={() => this.handleServerClick(server.NAME)}
-                        >
-                          {!this.props.serverMenuOpen ? ( // show tooltip only when menu closed
-                            <Tooltip title={onlyName} placement="right-end">
+                <div className={classes.toolbar} />
+              )}
+
+              <Divider />
+              <List component="nav" className={classes.root}>
+                {this.props.serversLoading ? (
+                  <ListItem>
+                    <CircularProgress className={classes.progress} size={30} />
+                    {
+                      <Typography variant="caption">
+                        Fetching servers...
+                      </Typography>
+                    }
+                  </ListItem>
+                ) : (
+                  this.props.filteredServers.map(server => {
+                    const onlyName = server.NAME.split(" ")[0];
+                    return (
+                      <React.Fragment key={server.NAME}>
+                        <Grow in>
+                          <ListItem
+                            className={classes.listItem}
+                            button
+                            selected={this.props.selectedServer === server.NAME}
+                            onClick={() => this.onServerClick(server.NAME)}
+                          >
+                            {!this.props.serverMenuOpen ? ( // show tooltip only when menu closed
+                              <Tooltip title={onlyName} placement="right-end">
+                                <ListItemIcon>
+                                  <DeviceHubRounded
+                                    className={
+                                      server.NAME.includes("(Running)")
+                                        ? classes.runningServer
+                                        : classes.stoppedServer
+                                    }
+                                  />
+                                </ListItemIcon>
+                              </Tooltip>
+                            ) : (
                               <ListItemIcon>
                                 <DeviceHubRounded
                                   className={
@@ -201,32 +227,22 @@ class ServersMenu extends React.Component {
                                   }
                                 />
                               </ListItemIcon>
-                            </Tooltip>
-                          ) : (
-                            <ListItemIcon>
-                              <DeviceHubRounded
-                                className={
-                                  server.NAME.includes("(Running)")
-                                    ? classes.runningServer
-                                    : classes.stoppedServer
-                                }
-                              />
-                            </ListItemIcon>
-                          )}
-                          <ListItemText
-                            classes={{ primary: classes.primary }}
-                            primary={`${onlyName}`}
-                          />
-                        </ListItem>
-                      </Grow>
-                    </React.Fragment>
-                  );
-                })
-              )}
-            </List>
-          </Drawer>
-        </div>
-      </React.Fragment>
+                            )}
+                            <ListItemText
+                              classes={{ primary: classes.primary }}
+                              primary={`${onlyName}`}
+                            />
+                          </ListItem>
+                        </Grow>
+                      </React.Fragment>
+                    );
+                  })
+                )}
+              </List>
+            </Drawer>
+          </div>
+        </React.Fragment>
+      </MuiThemeProvider>
     );
   }
 }

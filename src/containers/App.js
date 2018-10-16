@@ -7,19 +7,11 @@ import Services from "../components/Services";
 import ServersMenu from "../components/ServersMenu";
 import FilterMenu from "../components/FilterMenu";
 import Footer from "../components/Footer";
-import ErrorMessage from "../components/ErrorMessage";
+import Popup from "../components/Popup";
+import RequestForm from "../components/RequestForm";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Fetcher from "../utils/Fetcher";
 import DisplayTable from "../components/DisplayTable";
-
-const columns = ["Name", "Company", "City", "State"];
-
-const data = [
-  ["Joe James", "Test Corp", "Yonkers", "NY"],
-  ["John Walsh", "Test Corp", "Hartford", "CT"],
-  ["Bob Herm", "Test Corp", "Tampa", "FL"],
-  ["James Houston", "Test Corp", "Dallas", "TX"]
-];
 
 const styles = theme => ({
   root: {
@@ -32,37 +24,33 @@ const styles = theme => ({
 });
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.authorized = this.authorized.bind(this);
-    this.onSelectedServer = this.onSelectedServer.bind(this);
-    this.handleSelectedService = this.handleSelectedService.bind(this);
-    this.toggleDrawer = this.toggleDrawer.bind(this);
-    this.menuOpen = this.menuOpen.bind(this);
-    this.handleWebservers = this.handleWebservers.bind(this);
-    this.handleServerSearch = this.handleServerSearch.bind(this);
-    this.handleWebservices = this.handleWebservices.bind(this);
-    this.handleErrorMessageClose = this.handleErrorMessageClose.bind(this);
-    this.handleError = this.handleError.bind(this);
-  }
-
   state = {
     signedOn: true,
     serverMenuOpen: true,
     filterMenuOpen: false,
-    errorReceived: "",
-    errorMessageOpen: false,
+    popupMessage: "",
+    popupOpen: false,
+    snackbarVariant: "",
+    getFormOpen: false,
     servers: [],
     filteredServers: [],
     serverInfo: [],
+    infoLoading: true,
     serversLoading: true,
     selectedServer: "",
     services: [],
     servicesLoading: true,
     selectedService: "",
     selectedMethod: "",
+    methodType: "",
+    getResultSchema: [],
     data: [],
-    columns: [],
+    port: "",
+    basePath: "" /* /web/services/invent */,
+    path: "" /* /select/{ID} */,
+    parameters: [],
+    query: "",
+    parameterVariables: [],
     headerText: "CRUDGENGUI",
     version: "0.2.0"
   };
@@ -76,6 +64,7 @@ class App extends React.Component {
           Fetcher.getWebserverInfo
         )
       );
+      this.setState({ infoLoading: false });
       const webserviceResponse = await Promise.all(
         webserversResponse.WSS.map(server => server.NAME.split(" ")[0]).map(
           Fetcher.getWebservices
@@ -94,20 +83,19 @@ class App extends React.Component {
     this.setState({ signedOn: condition });
   };
 
-  onSelectedServer = server => {
+  // Server methods
+
+  handleSelectedServer = server => {
     this.setState({ selectedServer: server });
   };
 
   handleSelectedService = service =>
-    this.setState({ selectedService: service });
-
-  toggleDrawer = () => {
-    this.setState({ serverMenuOpen: !this.state.serverMenuOpen });
-  };
-
-  menuOpen = condition => {
-    this.setState({ filterMenuOpen: condition });
-  };
+    this.setState({
+      selectedService: service,
+      port: this.state.serverInfo[
+        this.getServerIndex()
+      ].WSINFO.HTTPSERVERPORTS.slice(0, -1)
+    });
 
   handleWebservers = webservers => {
     this.setState({
@@ -115,14 +103,6 @@ class App extends React.Component {
       filteredServers: webservers,
       serversLoading: false
     });
-  };
-
-  handleError = error => {
-    this.setState({ errorReceived: error, errorMessageOpen: true });
-  };
-
-  handleErrorMessageClose = () => {
-    this.setState({ errorMessageOpen: false });
   };
 
   handleServerSearch = filteredServers =>
@@ -136,11 +116,9 @@ class App extends React.Component {
     });
   };
 
-  setColumns = columns => this.setState({ columns: columns });
+  handlePort = port => this.setState({ port: port });
 
-  setData = data => this.setState({ data: data });
-
-  getIndex = () => {
+  getServerIndex = () => {
     for (let i = 0; i < this.state.servers.length; i++) {
       const element = this.state.servers[i];
       if (this.state.selectedServer === element.NAME) return i;
@@ -148,15 +126,108 @@ class App extends React.Component {
     return -1;
   };
 
+  // Menu methods
+
+  toggleDrawer = () => {
+    this.setState({ serverMenuOpen: !this.state.serverMenuOpen });
+  };
+
+  menuOpen = condition => {
+    this.setState({ filterMenuOpen: condition });
+  };
+
+  // Error handling
+
+  handleError = message => {
+    this.setState({
+      popupMessage: message,
+      popupOpen: true,
+      snackbarVariant: "error"
+    });
+  };
+
+  handlePopupClose = () => {
+    this.setState({ popupOpen: false });
+  };
+
+  // Success message
+
+  handleSuccessMessage = message => {
+    this.setState({
+      popupMessage: message,
+      popupOpen: true,
+      snackbarVariant: "success"
+    });
+  };
+
+  // Info message
+
+  handleInfoMessage = message => {
+    this.setState({
+      popupMessage: message,
+      popupOpen: true,
+      snackbarVariant: "info"
+    });
+  };
+
+  // Request methods
+
+  setRequestOptions = (
+    getResultSchema,
+    basePath,
+    { name, path, method, parameters, query }
+  ) => {
+    this.setState({
+      getResultSchema: getResultSchema,
+      selectedMethod: name,
+      methodType: method,
+      basePath: basePath,
+      path: path,
+      parameters: parameters,
+      query: query,
+      parameterVariables: parameters.map(param => ({
+        name: [param.name],
+        value: [param.name]
+      }))
+    });
+  };
+
+  cleanPath = path => {
+    return path.replace(/[{}]/g, "");
+  };
+
+  handleParameterChange = (e, paramIndex) => {
+    let parameterVariables = Object.assign([], this.state.parameterVariables);
+    parameterVariables[paramIndex].value = e.target.value;
+    this.setState({ parameterVariables });
+  };
+
+  handleRequestFormOpen = () => {
+    this.setState({ getFormOpen: true });
+  };
+
+  handleRequestFormClose = () => {
+    this.setState({
+      getFormOpen: false
+    });
+  };
+
+  handleResponse = message => {
+    this.handleSuccessMessage(message);
+  };
+
+  setData = data => this.setState({ data: data });
+
   render() {
     const { classes } = this.props;
     const {
       signedOn,
-      errorReceived,
-      errorMessageOpen,
+      popupMessage,
+      popupOpen,
       serverMenuOpen,
       selectedMethod,
-      filterMenuOpen
+      filterMenuOpen,
+      data
     } = this.state;
 
     return (
@@ -173,34 +244,64 @@ class App extends React.Component {
           {signedOn && (
             <div className={classes.root}>
               <ServersMenu
-                getIndex={this.getIndex}
+                getIndex={this.getServerIndex}
                 handleWebservers={this.handleWebservers}
                 handleServerSearch={this.handleServerSearch}
                 handleWebservices={this.handleWebservices}
                 handleError={this.handleError}
-                onSelectedServer={this.onSelectedServer}
+                handleSelectedServer={this.handleSelectedServer}
                 toggleDrawer={this.toggleDrawer}
                 {...this.state}
               />
-              {selectedMethod === "" ? (
+              {selectedMethod !== "Hello" ? (
                 <Services
-                  getIndex={this.getIndex}
+                  getServerIndex={this.getServerIndex}
                   handleSelectedService={this.handleSelectedService}
-                  onSelectedServer={this.onSelectedServer}
+                  onSelectedServer={this.handleSelectedServer}
                   handleError={this.handleError}
+                  handleGetFormOpen={this.handleRequestFormOpen}
+                  handlePort={this.handlePort}
+                  setRequestOptions={this.setRequestOptions}
                   {...this.state}
                 />
               ) : (
-                <DisplayTable title="Test" data={data} columns={columns} />
+                <DisplayTable
+                  title={this.state.selectedMethod}
+                  data={this.state.data}
+                  columns={this.state.getResultSchema}
+                />
               )}
             </div>
           )}
-          {!signedOn && <SignIn authorized={this.authorized} />}
+          {!signedOn && (
+            <SignIn
+              authorized={this.authorized}
+              handleError={this.handleError}
+            />
+          )}
           {!signedOn && <Footer version={this.state.version} />}
-          <ErrorMessage
-            handleErrorMessageClose={this.handleErrorMessageClose}
-            open={errorMessageOpen}
-            message={errorReceived}
+          <Popup
+            handlePopupClose={this.handlePopupClose}
+            variant={this.state.snackbarVariant}
+            open={popupOpen}
+            message={popupMessage}
+          />
+          <RequestForm
+            handleRequestFormClose={this.handleRequestFormClose}
+            handleParameterChange={this.handleParameterChange}
+            handleResponse={this.handleResponse}
+            handleError={this.handleError}
+            handleInfoMessage={this.handleInfoMessage}
+            getFormOpen={this.state.getFormOpen}
+            title={this.state.selectedMethod}
+            getResultSchema={this.state.getResultSchema}
+            port={this.state.port}
+            basePath={this.state.basePath}
+            path={this.state.path}
+            parameters={this.state.parameters}
+            query={this.state.query}
+            parameterVariables={this.state.parameterVariables}
+            methodType={this.state.methodType}
           />
         </div>
       </React.Fragment>

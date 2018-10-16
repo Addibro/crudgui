@@ -4,15 +4,11 @@ const webserverURL = "http://10.210.59.20:10086/web/services/webserv";
 const swaggerDirURL = "http://10.210.59.20:10086/swaggers/";
 
 const Fetcher = () => {
-  const AbortController = window.AbortController;
-
   const authorize = (username, password) =>
     fetch(`${webserverURL}/validate/${username}/${password}`);
 
   const getWebservers = () =>
-    fetch(`${webserverURL}/getAll`, { signal: AbortController.signal }).then(
-      res => res.json()
-    );
+    fetch(`${webserverURL}/getAll`).then(res => res.json());
 
   const getWebserverInfo = webserver =>
     fetch(`${webserverURL}/${webserver}`).then(res => res.json());
@@ -30,11 +26,7 @@ const Fetcher = () => {
       res.json()
     );
 
-  const doGetMethod = (port, basePath, template, parameters, reference) =>
-    // TODO correct path
-    fetch(`${baseURL}:${port}${basePath}/select/999/0/a`).then(res =>
-      res.json()
-    );
+  const doGetMethod = (url, signal) => fetch(url, { signal: signal });
 
   const doPostMethod = () => {
     return new Promise.reject("Not implemented");
@@ -57,7 +49,8 @@ const Fetcher = () => {
     doGetMethod: doGetMethod,
     doPutMethod: doPutMethod,
     doPostMethod: doPostMethod,
-    doDelMethod: doDelMethod
+    doDelMethod: doDelMethod,
+    baseURL: baseURL
   };
 };
 

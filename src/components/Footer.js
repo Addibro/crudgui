@@ -1,7 +1,17 @@
 import React from "react";
-import withStyles from "@material-ui/core/styles/withStyles";
+import {
+  withStyles,
+  createMuiTheme,
+  MuiThemeProvider
+} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true
+  }
+});
 
 const styles = theme => ({
   root: {
@@ -17,18 +27,20 @@ const Footer = props => {
   const { classes } = props;
 
   return (
-    <div className={classes.root}>
-      <footer className={classes.footer}>
-        <Grid container>
-          <Grid item xs={11}>
-            <Typography variant="caption">@ Apper Systems AB</Typography>
+    <MuiThemeProvider theme={theme}>
+      <div className={classes.root}>
+        <footer className={classes.footer}>
+          <Grid container>
+            <Grid item xs={11}>
+              <Typography>@ Apper Systems AB</Typography>
+            </Grid>
+            <Grid item xs={1}>
+              <Typography>v. {props.version}</Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={1}>
-            <Typography variant="caption">v. {props.version}</Typography>
-          </Grid>
-        </Grid>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </MuiThemeProvider>
   );
 };
 

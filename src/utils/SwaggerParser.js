@@ -84,7 +84,6 @@ const SwaggerParser = () => {
   return {
     getDefinitions: getDefinitions,
     getPaths: getPaths,
-    // getDefinitionProperties: getDefinitionProperties,
     resultOfGet: resultOfGet
   };
 };
