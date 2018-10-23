@@ -67,14 +67,14 @@ class RequestForm extends React.Component {
     this.setState({ fetchError: "" });
   };
 
-  handleChange = (e, paramIndex) => {
-    this.props.handleParameterChange(e, paramIndex);
+  handleChange = (e, paramIndex, nestedIndex) => {
+    this.props.handleParameterChange(e, paramIndex, nestedIndex);
   };
 
   handleSubmit = async event => {
+    event.preventDefault();
     this.AbortController = new window.AbortController();
     this.setState({ fetchError: "", fetchLoading: true });
-    event.preventDefault();
     try {
       let response;
       switch (this.props.methodType) {
@@ -151,7 +151,7 @@ class RequestForm extends React.Component {
                       <React.Fragment key={i}>
                         <Typography variant="button">{param.name}</Typography>
                         <Divider />
-                        {param.parameters.map(p => {
+                        {param.parameters.map((p, j) => {
                           return (
                             <div key={p.name}>
                               <FormControl required fullWidth>
@@ -162,12 +162,12 @@ class RequestForm extends React.Component {
                                   type={
                                     p.type === "integer" ? "number" : p.type
                                   }
-                                  required={p.required ? p.required : true}
+                                  required
                                   inputProps={{
                                     maxLength: p.maxLength ? p.maxLength : 0
                                   }}
                                   helperText={"*Required"}
-                                  onChange={e => this.handleChange(e, i)}
+                                  onChange={e => this.handleChange(e, i, j)}
                                   fullWidth
                                 />
                               </FormControl>

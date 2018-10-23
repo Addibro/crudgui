@@ -55,7 +55,7 @@ class App extends React.Component {
     parameters: [],
     query: "",
     parameterVariables: [],
-    headerText: "CRUDGENGUI",
+    headerText: "Webserver Explorer",
     version: "0.2.5"
   };
 
@@ -196,16 +196,31 @@ class App extends React.Component {
         (query === "query" ? "/?" : query === "path" ? "/" : ""),
       parameters: parameters,
       query: query,
-      parameterVariables: parameters.map(param => ({
-        name: [param.name],
-        value: [param.name]
-      }))
+      parameterVariables: parameters.map(param => {
+        if (param.parameters) {
+          return param.parameters.map(p => ({
+            name: p.name,
+            value: p.name
+          }));
+        } else {
+          return { name: param.name, value: param.name };
+        }
+      })
     });
   };
 
-  handleParameterChange = (e, paramIndex) => {
+  handleParameterChange = (e, paramIndex, nestedIndex) => {
     let parameterVariables = Object.assign([], this.state.parameterVariables);
-    parameterVariables[paramIndex].value = e.target.value;
+    if (nestedIndex == undefined) {
+      parameterVariables[paramIndex].value = e.target.value;
+    } else {
+      parameterVariables[paramIndex][nestedIndex].value = e.target.value;
+      console.log(
+        parameterVariables[paramIndex][nestedIndex],
+        paramIndex,
+        nestedIndex
+      );
+    }
     this.setState({ parameterVariables });
   };
 
