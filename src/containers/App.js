@@ -12,6 +12,8 @@ import RequestForm from "../components/RequestForm";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Fetcher from "../utils/Fetcher";
 import DisplayTable from "../components/DisplayTable";
+import ResultPane from "../components/ResultPane";
+import ReopenResultPane from "../components/ReopenResultPane";
 
 const styles = theme => ({
   root: {
@@ -28,10 +30,11 @@ class App extends React.Component {
     signedOn: true,
     serverMenuOpen: true,
     filterMenuOpen: false,
-    popupMessage: "",
     popupOpen: false,
-    snackbarVariant: "",
     getFormOpen: false,
+    resultPaneOpen: false,
+    popupMessage: "",
+    snackbarVariant: "",
     servers: [],
     filteredServers: [],
     serverInfo: [],
@@ -44,10 +47,11 @@ class App extends React.Component {
     selectedMethod: "",
     methodType: "",
     getResultSchema: [],
-    data: [],
+    rows: [],
     port: "",
     basePath: "" /* /web/services/invent */,
     path: "" /* /select/{ID} */,
+    wholePath: "",
     parameters: [],
     query: "",
     parameterVariables: [],
@@ -76,8 +80,6 @@ class App extends React.Component {
       this.handleError(error.message);
     }
   }
-
-  // componentWillUnmount = () => Fetcher.AbortController.abort();
 
   authorized = condition => {
     this.setState({ signedOn: condition });
@@ -183,6 +185,15 @@ class App extends React.Component {
       methodType: method,
       basePath: basePath,
       path: path,
+      wholePath:
+        Fetcher.baseURL +
+        ":" +
+        this.state.port +
+        basePath +
+        (parameters.length && query !== "body"
+          ? path.slice(0, path.indexOf("{") - 1)
+          : path) +
+        (query === "query" ? "/?" : query === "path" ? "/" : ""),
       parameters: parameters,
       query: query,
       parameterVariables: parameters.map(param => ({
@@ -190,10 +201,6 @@ class App extends React.Component {
         value: [param.name]
       }))
     });
-  };
-
-  cleanPath = path => {
-    return path.replace(/[{}]/g, "");
   };
 
   handleParameterChange = (e, paramIndex) => {
@@ -212,23 +219,58 @@ class App extends React.Component {
     });
   };
 
-  handleResponse = message => {
-    this.handleSuccessMessage(message);
+  handleResponse = response => {
+    this.state.getResultSchema
+      .filter(
+        schema => schema.type === "string" && response[schema.objectName] !== ""
+      )
+      .forEach(message =>
+        this.handleInfoMessage(
+          `${message.objectName}: ${response[message.objectName]}`
+        )
+      );
+
+    const resultObject = this.state.getResultSchema
+      .filter(schema => schema.properties)
+      .map(({ objectName, properties, type }) => ({
+        objectName: objectName,
+        columns: properties.map(col => ({ name: col.name })),
+        columnWidth: properties.map(col => ({
+          columnName: col.name,
+          width: 200
+        })),
+        type: type
+      }))[0];
+
+    const columns = resultObject.columns;
+
+    const columnWidth = resultObject.columnWidth;
+
+    const rows = response[resultObject.objectName];
+
+    const type = resultObject.type;
+
+    this.setState({
+      columns: columns,
+      columnWidth: columnWidth,
+      rows: type ? rows : [rows],
+      resultPaneOpen: true
+    });
+  };
+
+  handleResultPaneClose = () => {
+    this.setState({ resultPaneOpen: false });
+  };
+
+  handleResultPaneOpen = () => {
+    this.setState({ resultPaneOpen: true });
   };
 
   setData = data => this.setState({ data: data });
 
   render() {
     const { classes } = this.props;
-    const {
-      signedOn,
-      popupMessage,
-      popupOpen,
-      serverMenuOpen,
-      selectedMethod,
-      filterMenuOpen,
-      data
-    } = this.state;
+    const { signedOn, popupMessage, popupOpen, serverMenuOpen } = this.state;
 
     return (
       <React.Fragment>
@@ -253,33 +295,33 @@ class App extends React.Component {
                 toggleDrawer={this.toggleDrawer}
                 {...this.state}
               />
-              {selectedMethod !== "Hello" ? (
-                <Services
-                  getServerIndex={this.getServerIndex}
-                  handleSelectedService={this.handleSelectedService}
-                  onSelectedServer={this.handleSelectedServer}
-                  handleError={this.handleError}
-                  handleGetFormOpen={this.handleRequestFormOpen}
-                  handlePort={this.handlePort}
-                  setRequestOptions={this.setRequestOptions}
-                  {...this.state}
-                />
-              ) : (
-                <DisplayTable
-                  title={this.state.selectedMethod}
-                  data={this.state.data}
-                  columns={this.state.getResultSchema}
-                />
-              )}
+              <Services
+                getServerIndex={this.getServerIndex}
+                handleSelectedService={this.handleSelectedService}
+                onSelectedServer={this.handleSelectedServer}
+                handleError={this.handleError}
+                handleGetFormOpen={this.handleRequestFormOpen}
+                handlePort={this.handlePort}
+                setRequestOptions={this.setRequestOptions}
+                {...this.state}
+              />
+              <ReopenResultPane
+                handleResultPaneOpen={this.handleResultPaneOpen}
+                rows={this.state.rows}
+                resultPaneOpen={this.state.resultPaneOpen}
+              />
             </div>
           )}
           {!signedOn && (
-            <SignIn
-              authorized={this.authorized}
-              handleError={this.handleError}
-            />
+            <div>
+              <SignIn
+                authorized={this.authorized}
+                handleError={this.handleError}
+              />
+              <Footer version={this.state.version} />
+            </div>
           )}
-          {!signedOn && <Footer version={this.state.version} />}
+          {/* {!signedOn && <Footer version={this.state.version} />} */}
           <Popup
             handlePopupClose={this.handlePopupClose}
             variant={this.state.snackbarVariant}
@@ -298,10 +340,19 @@ class App extends React.Component {
             port={this.state.port}
             basePath={this.state.basePath}
             path={this.state.path}
+            wholePath={this.state.wholePath}
             parameters={this.state.parameters}
             query={this.state.query}
             parameterVariables={this.state.parameterVariables}
             methodType={this.state.methodType}
+          />
+          <ResultPane
+            open={this.state.resultPaneOpen}
+            title={this.state.selectedMethod}
+            onClose={this.handleResultPaneClose}
+            columns={this.state.columns}
+            columnWidth={this.state.columnWidth}
+            rows={this.state.rows}
           />
         </div>
       </React.Fragment>

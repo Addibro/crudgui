@@ -1,0 +1,313 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "webserv APIs",
+    "description": "APIs available for webserv",
+    "version": "1.0.0"
+  },
+  "basePath": "/web/services/webserv",
+  "tags": [
+    {
+      "name": "webserv APIs",
+      "description": "APIs available for webserv"
+    }
+  ],
+  "definitions": {
+    "WEBSERVERINFO": {
+      "type": "object",
+      "properties": {
+        "INSTANCEPATH": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "APPLICATIONSERVER": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "APPLICATIONSERVERPORTS": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "SUBSYSTEM": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "JOBNAME": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "RUNTIMEUSERID": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "JVMVERSION": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "JVMTYPE": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "WEBSERVICESRUNTIME": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "WEBSERVICESINSTALLPATH": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "CONTEXTROOT": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "JAVATOOLBOXTRACING": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "TOOLBOXTRACEOUTPUTFILE": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "SERVERLOGFILE": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "HTTPSERVER": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "HTTPSERVERPORTS": {
+          "type": "string",
+          "maxLength": 50
+        }
+      }
+    },
+    "WEBSERVICES": {
+      "type": "object",
+      "properties": {
+        "NAME": {
+          "type": "string",
+          "maxLength": 30
+        }
+      }
+    },
+    "WEBSERVERS": {
+      "type": "object",
+      "properties": {
+        "NAME": {
+          "type": "string",
+          "maxLength": 30
+        }
+      }
+    },
+    "VALIDATEResult": {
+      "type": "object",
+      "properties": {
+        "ERR": {
+          "type": "string",
+          "maxLength": 100
+        }
+      }
+    },
+    "PREPARESWAGGERResult": {
+      "type": "object",
+      "properties": {
+        "ERR": {
+          "type": "string",
+          "maxLength": 100
+        }
+      }
+    },
+    "GETWEBSERVERINFOResult": {
+      "type": "object",
+      "properties": {
+        "WSINFO_LENGTH": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "WSINFO": {
+          "$ref": "#/definitions/WEBSERVERINFO"
+        },
+        "ERR": {
+          "type": "string",
+          "maxLength": 100
+        }
+      }
+    },
+    "GETWEBSERVICESResult": {
+      "type": "object",
+      "properties": {
+        "NAME": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "SERVICES": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/definitions/WEBSERVICES"
+          }
+        },
+        "ERR": {
+          "type": "string",
+          "maxLength": 100
+        }
+      }
+    },
+    "GETWEBSERVERSResult": {
+      "type": "object",
+      "properties": {
+        "WSS": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/definitions/WEBSERVERS"
+          }
+        },
+        "ERR": {
+          "type": "string",
+          "maxLength": 100
+        }
+      }
+    }
+  },
+  "paths": {
+    "/meta/{webserver}/{webservice}": {
+      "get": {
+        "tags": ["webserv APIs"],
+        "operationId": "PREPARESWAGGER",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "webserver",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 50
+          },
+          {
+            "name": "webservice",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 50
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/PREPARESWAGGERResult"
+            }
+          }
+        }
+      }
+    },
+    "/validate/{username}/{password}": {
+      "get": {
+        "tags": ["webserv APIs"],
+        "operationId": "VALIDATE",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 10
+          },
+          {
+            "name": "password",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/VALIDATEResult"
+            }
+          }
+        }
+      }
+    },
+    "/services/{webserver}": {
+      "get": {
+        "tags": ["webserv APIs"],
+        "operationId": "GETWEBSERVICES",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "webserver",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 50
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/GETWEBSERVICESResult"
+            }
+          }
+        }
+      }
+    },
+    "/{webserver}": {
+      "get": {
+        "tags": ["webserv APIs"],
+        "operationId": "GETWEBSERVERINFO",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "webserver",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "\\w+",
+            "maxLength": 50
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/GETWEBSERVERINFOResult"
+            }
+          }
+        }
+      }
+    },
+    "/getAll": {
+      "get": {
+        "tags": ["webserv APIs"],
+        "operationId": "GETWEBSERVERS",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/GETWEBSERVERSResult"
+            }
+          }
+        }
+      }
+    }
+  }
+}

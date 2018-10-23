@@ -28,14 +28,14 @@ const Fetcher = () => {
 
   const doGetMethod = (url, signal) => fetch(url, { signal: signal });
 
-  const doPostMethod = () => {
-    return new Promise.reject("Not implemented");
+  const doPostMethod = (url, signal) => {
+    return Promise.reject("Not implemented");
   };
   const doPutMethod = () => {
-    return new Promise.reject("Not implemented");
+    return Promise.reject("Not implemented");
   };
   const doDelMethod = () => {
-    return new Promise.reject("Not implemented");
+    return Promise.reject("Not implemented");
   };
 
   return {

@@ -1,5 +1,9 @@
 import React from "react";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  withStyles
+} from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -13,7 +17,6 @@ import FormControl from "@material-ui/core/FormControl";
 import LockIcon from "@material-ui/icons/LockOutlined";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import Visibility from "@material-ui/icons/Visibility";
-import withStyles from "@material-ui/core/styles/withStyles";
 import Fetcher from "../utils/Fetcher";
 import green from "@material-ui/core/colors/green";
 

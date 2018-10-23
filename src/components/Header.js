@@ -42,7 +42,7 @@ const styles = theme => ({
     display: "none"
   },
   header: {
-    paddingLeft: 10
+    paddingLeft: 12
   }
 });
 

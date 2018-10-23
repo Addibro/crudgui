@@ -1,5 +1,9 @@
 import React from "react";
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import {
+  createMuiTheme,
+  MuiThemeProvider,
+  withStyles
+} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -17,8 +21,10 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Error from "@material-ui/icons/Error";
 import Send from "@material-ui/icons/Send";
 import blue from "@material-ui/core/colors/blue";
+import green from "@material-ui/core/colors/green";
 
 import Fetcher from "../utils/Fetcher";
+import { Paper } from "@material-ui/core";
 
 const theme = createMuiTheme({
   typography: {
@@ -31,17 +37,26 @@ const theme = createMuiTheme({
   }
 });
 
+const styles = theme => ({
+  submit: {
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700]
+    }
+  }
+});
+
 class RequestForm extends React.Component {
   constructor(props) {
     super(props);
     this.url = React.createRef();
-    this.AbortController = "";
+    this.AbortController = new window.AbortController();
   }
   state = {
     fetchError: "",
     fetchLoading: false
   };
-  // let URL = React.createRef();
+
   handleClose = () => {
     this.AbortController.abort();
     this.props.handleRequestFormClose();
@@ -61,20 +76,32 @@ class RequestForm extends React.Component {
     this.setState({ fetchError: "", fetchLoading: true });
     event.preventDefault();
     try {
-      const response = await Fetcher.doGetMethod(
-        this.url.current.props.value,
-        this.AbortController.signal
-      );
+      let response;
+      switch (this.props.methodType) {
+        case "get":
+          response = await Fetcher.doGetMethod(
+            this.url.current.props.value,
+            this.AbortController.signal
+          );
+          break;
+        case "post":
+          response = await Fetcher.doPostMethod(
+            this.url.current.props.value,
+            this.AbortController.signal
+          );
+          break;
+        default:
+          this.setState({ fetchError: "Unknown method type" });
+      }
       if (!response.ok) {
         this.setState({ fetchError: response.statusText });
         return;
       }
       const json = await response.json();
-      console.log(json[this.props.getResultSchema[0].objectName]);
       this.handleClose();
-      this.props.handleResponse("Successful response from " + this.props.title);
+      this.props.handleResponse(json);
     } catch (error) {
-      if (error.name == "AbortError") {
+      if (error.name === "AbortError") {
         this.props.handleInfoMessage(error.message);
         return;
       }
@@ -85,6 +112,7 @@ class RequestForm extends React.Component {
   };
 
   render() {
+    const { classes } = this.props;
     return (
       <MuiThemeProvider theme={theme}>
         <Dialog
@@ -100,68 +128,83 @@ class RequestForm extends React.Component {
                 disabled
                 label="URL"
                 value={
-                  this.props.query
-                    ? Fetcher.baseURL +
-                      ":" +
-                      this.props.port +
-                      this.props.basePath +
-                      (this.props.parameters.length
-                        ? this.props.path.slice(
-                            0,
-                            this.props.path.indexOf("{") - 1
-                          )
-                        : this.props.path) +
-                      "/?" +
-                      this.props.parameterVariables
+                  this.props.wholePath +
+                  (this.props.query === "query"
+                    ? this.props.parameterVariables
                         .map(param => param.name + "=" + param.value)
                         .join("&")
-                    : Fetcher.baseURL +
-                      ":" +
-                      this.props.port +
-                      this.props.basePath +
-                      (this.props.parameters.length
-                        ? this.props.path.slice(
-                            0,
-                            this.props.path.indexOf("{") - 1
-                          )
-                        : this.props.path) +
-                      "/" +
-                      this.props.parameterVariables
-                        .map(param => param.value)
-                        .join("/")
+                    : this.props.query === "path"
+                      ? this.props.parameterVariables
+                          .map(param => param.value)
+                          .join("/")
+                      : "")
                 }
                 margin="normal"
                 variant="outlined"
                 fullWidth
               />
               <br />
-              {this.props.parameters.length ? (
-                this.props.parameters.map((param, i) => {
-                  return (
-                    <div key={param + i}>
-                      <FormControl required>
-                        <TextField
-                          margin="dense"
-                          name={param.name}
-                          label={param.name + " (" + param.type + ")"}
-                          type={
-                            param.type === "integer" ? "number" : param.type
-                          }
-                          required={param.required}
-                          inputProps={{
-                            maxLength: param.maxLength ? param.maxLength : 0
-                          }}
-                          helperText={param.required ? "*Required" : ""}
-                          onChange={e => this.handleChange(e, i)}
-                        />
-                      </FormControl>
-                      <br />
-                    </div>
-                  );
-                })
-              ) : (
-                <Typography>No parameters needed</Typography>
-              )}
+              <Paper style={{ padding: 25 }}>
+                {this.props.parameters.length ? (
+                  this.props.parameters.map((param, i) => {
+                    return param.parameters ? ( // Nested parameters?
+                      <React.Fragment key={i}>
+                        <Typography variant="button">{param.name}</Typography>
+                        <Divider />
+                        {param.parameters.map(p => {
+                          return (
+                            <div key={p.name}>
+                              <FormControl required fullWidth>
+                                <TextField
+                                  margin="dense"
+                                  name={p.name}
+                                  label={p.name + " (" + p.type + ")"}
+                                  type={
+                                    p.type === "integer" ? "number" : p.type
+                                  }
+                                  required={p.required ? p.required : true}
+                                  inputProps={{
+                                    maxLength: p.maxLength ? p.maxLength : 0
+                                  }}
+                                  helperText={"*Required"}
+                                  onChange={e => this.handleChange(e, i)}
+                                  fullWidth
+                                />
+                              </FormControl>
+                            </div>
+                          );
+                        })}
+                        <br />
+                      </React.Fragment>
+                    ) : (
+                      // Usual form
+                      <div key={param.name}>
+                        <FormControl required fullWidth>
+                          <TextField
+                            margin="dense"
+                            name={param.name}
+                            label={param.name + " (" + param.type + ")"}
+                            type={
+                              param.type === "integer" ? "number" : param.type
+                            }
+                            required={param.required ? param.required : true}
+                            inputProps={{
+                              maxLength: param.maxLength ? param.maxLength : 0
+                            }}
+                            helperText={param.required ? "*Required" : ""}
+                            onChange={e => this.handleChange(e, i)}
+                            fullWidth
+                          />
+                        </FormControl>
+                        <br />
+                      </div>
+                    );
+                  })
+                ) : (
+                  <Typography>No parameters needed</Typography>
+                )}
+                <br />
+              </Paper>
               <br />
               <div>
                 {this.props.parameters.length !== 0 && (
@@ -217,4 +260,4 @@ class RequestForm extends React.Component {
   }
 }
 
-export default RequestForm;
+export default withStyles(styles)(RequestForm);

@@ -64,20 +64,12 @@ class ServicePanel extends React.Component {
   };
 
   onMethodClick = pathObject => {
-    const { method, reference } = pathObject;
-    let resultSchemaOfMethod;
+    const { reference } = pathObject;
     try {
-      switch (method) {
-        case "get":
-          resultSchemaOfMethod = SwaggerParser.resultOfGet(
-            reference,
-            this.state.definitions
-          );
-
-          break;
-        default:
-          this.props.handleError("Unrecognizable method type");
-      }
+      const resultSchemaOfMethod = SwaggerParser.getResultSchema(
+        reference,
+        this.state.definitions
+      );
       this.props.setRequestOptions(
         resultSchemaOfMethod,
         this.state.basePath,
@@ -111,7 +103,7 @@ class ServicePanel extends React.Component {
       );
       if (prepareSwaggerResponse.ERR === "") {
         const response = await Fetcher.getSwagger(webserver, webservice);
-        console.log(response);
+        // console.log(response);
         this.setState({
           basePath: response.basePath,
           definitions: SwaggerParser.getDefinitions(response),
@@ -189,7 +181,7 @@ class ServicePanel extends React.Component {
                       ))}
                     </List>
                   </div>
-                  <div style={{ flexBasis: "25%" }}>
+                  <div style={{ flexBasis: "10%" }}>
                     <List
                       component="nav"
                       subheader={
@@ -205,7 +197,7 @@ class ServicePanel extends React.Component {
                       ))}
                     </List>
                   </div>
-                  <div style={{ flexBasis: "50%" }}>
+                  <div style={{ flexBasis: "25%" }}>
                     <List
                       component="nav"
                       subheader={
@@ -215,7 +207,7 @@ class ServicePanel extends React.Component {
                       {this.state.paths.map(path => (
                         <div key={path.path}>
                           <ListItem>
-                            {path.query ? (
+                            {path.query === "query" ? (
                               <ListItemText
                                 primary={this.formatQueryString(path)}
                               />
