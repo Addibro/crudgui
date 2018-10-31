@@ -103,13 +103,19 @@ class ServicePanel extends React.Component {
       );
       if (prepareSwaggerResponse.ERR === "") {
         const response = await Fetcher.getSwagger(webserver, webservice);
-        // console.log(response);
-        this.setState({
-          basePath: response.basePath,
-          definitions: SwaggerParser.getDefinitions(response),
-          paths: SwaggerParser.getPaths(response),
-          loadingSwagger: false
-        });
+        if (response.ok) {
+          const swagger = await response.json();
+          SwaggerParser.setSwagger(swagger);
+          this.setState({
+            basePath: swagger.basePath,
+            definitions: SwaggerParser.getDefinitions(),
+            paths: SwaggerParser.getPaths(),
+            loadingSwagger: false
+          });
+        } else {
+          this.props.handleError(response.statusText);
+          this.setState({ failedFetch: true });
+        }
       } else {
         this.setState({ failedFetch: true });
         this.props.handleError(prepareSwaggerResponse.ERR);

@@ -89,7 +89,7 @@ const Header = props => {
               color="inherit"
               className={classNames(classes.grow, classes.header)}
             >
-              {props.text}
+              Webserver Explorer
             </Typography>
           </Toolbar>
         </AppBar>

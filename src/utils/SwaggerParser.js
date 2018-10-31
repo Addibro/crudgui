@@ -1,5 +1,11 @@
+let swagger;
+
 const SwaggerParser = () => {
-  const getDefinitions = swagger => {
+  const setSwagger = s => (swagger = s);
+
+  const getSwagger = () => swagger;
+
+  const getDefinitions = () => {
     return Object.keys(swagger.definitions).map(def => {
       let defObj = {};
       defObj.definition = def;
@@ -16,14 +22,14 @@ const SwaggerParser = () => {
     });
   };
 
-  const getDefinitionProperties = (swagger, def) => {
+  const getDefinitionProperties = def => {
     return Object.keys(def.properties).map(prop => {
       let definitions = Object.assign({}, swagger.definitions);
       let propObj = {};
       propObj.name = prop;
       if (def.properties[prop].$ref) {
         propObj.parameters = getDefinitionProperties(
-          swagger,
+          // swagger,
           definitions[def.properties[prop].$ref.slice(14)]
         );
       }
@@ -32,7 +38,7 @@ const SwaggerParser = () => {
       propObj.maxLength = def.properties[prop].maxLength;
       if (def.properties[prop].items) {
         propObj.parameters = getDefinitionProperties(
-          swagger,
+          // swagger,
           definitions[def.properties[prop].items.$ref.slice(14)]
         );
       }
@@ -40,7 +46,7 @@ const SwaggerParser = () => {
     });
   };
 
-  const getPaths = swagger => {
+  const getPaths = () => {
     return Object.keys(swagger.paths).map(path => {
       let pathCopy = Object.assign({}, swagger.paths[path]);
       let pathObj = {};
@@ -55,7 +61,7 @@ const SwaggerParser = () => {
             14
           );
           pathObj.parameters = getDefinitionProperties(
-            swagger,
+            // swagger,
             swagger.definitions[postReference]
           );
         } else {
@@ -83,24 +89,32 @@ const SwaggerParser = () => {
         if (resultObj.type === "array") {
           resultObj.maxItems = prop.maxItems;
           const nextReference = prop.items.$ref.slice(14);
-          const nextRefProps = definitions.filter(
-            def => def.definition === nextReference
-          )[0].properties;
-          resultObj.properties = nextRefProps;
+          // const nextRefProps = definitions.filter(
+          //   def => def.definition === nextReference
+          // )[0].properties;
+          // resultObj.properties = nextRefProps;
+          resultObj.properties = getDefinitionProperties(
+            swagger.definitions[nextReference]
+          );
         } else if (resultObj.type === "string") {
           resultObj.maxLength = prop.maxLength;
         } else if (!type) {
           const nextReference = prop.$ref.slice(14);
-          const nextRefProps = definitions.filter(
-            def => def.definition === nextReference
-          )[0].properties;
-          resultObj.properties = nextRefProps;
+          // const nextRefProps = definitions.filter(
+          //   def => def.definition === nextReference
+          // )[0].properties;
+          // resultObj.properties = nextRefProps;
+          resultObj.properties = getDefinitionProperties(
+            swagger.definitions[nextReference]
+          );
         }
         return resultObj;
       });
   };
 
   return {
+    setSwagger: setSwagger,
+    getSwagger: getSwagger,
     getDefinitions: getDefinitions,
     getPaths: getPaths,
     getResultSchema: getResultSchema,

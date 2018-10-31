@@ -62,22 +62,29 @@ class App extends React.Component {
   async componentDidMount() {
     try {
       const webserversResponse = await Fetcher.getWebservers();
-      this.handleWebservers(webserversResponse.WSS);
-      const infoResponse = await Promise.all(
-        webserversResponse.WSS.map(server => server.NAME.split(" ")[0]).map(
-          Fetcher.getWebserverInfo
-        )
-      );
-      this.setState({ infoLoading: false });
-      const webserviceResponse = await Promise.all(
-        webserversResponse.WSS.map(server => server.NAME.split(" ")[0]).map(
-          Fetcher.getWebservices
-        )
-      );
-      this.handleWebservices(webserviceResponse, infoResponse);
+      if (webserversResponse.ok) {
+        const jsonResponse = await webserversResponse.json();
+        this.handleWebservers(jsonResponse.WSS);
+        const infoResponse = await Promise.all(
+          jsonResponse.WSS.map(server => server.NAME.split(" ")[0]).map(
+            Fetcher.getWebserverInfo
+          )
+        );
+        this.setState({ infoLoading: false });
+        const webserviceResponse = await Promise.all(
+          jsonResponse.WSS.map(server => server.NAME.split(" ")[0]).map(
+            Fetcher.getWebservices
+          )
+        );
+        this.handleWebservices(webserviceResponse, infoResponse);
+      } else {
+        this.handleError(
+          "Problem fetching servers: " + webserversResponse.statusText
+        );
+      }
     } catch (error) {
       if (error.name === "AbortError") return;
-      this.handleError(error.message);
+      this.handleError("Problem fetching servers: " + error.message);
     }
   }
 
@@ -185,15 +192,13 @@ class App extends React.Component {
       methodType: method,
       basePath: basePath,
       path: path,
-      wholePath:
-        Fetcher.baseURL +
-        ":" +
-        this.state.port +
-        basePath +
-        (parameters.length && query !== "body"
-          ? path.slice(0, path.indexOf("{") - 1)
-          : path) +
-        (query === "query" ? "/?" : query === "path" ? "/" : ""),
+      wholePath: this.getWholePath(
+        this.state.port,
+        basePath,
+        parameters,
+        query,
+        path
+      ),
       parameters: parameters,
       query: query,
       parameterVariables: parameters.map(param => {
@@ -207,6 +212,21 @@ class App extends React.Component {
         }
       })
     });
+  };
+
+  getParameter;
+
+  getWholePath = (port, basePath, parameters, query, path) => {
+    return (
+      Fetcher.baseURL +
+      ":" +
+      port +
+      basePath +
+      (parameters.length && query !== "body"
+        ? path.slice(0, path.indexOf("{") - 1)
+        : path) +
+      (query === "query" ? "/?" : query === "path" ? "/" : "")
+    );
   };
 
   handleParameterChange = (e, paramIndex, nestedIndex) => {
@@ -245,32 +265,60 @@ class App extends React.Component {
         )
       );
 
-    const resultObject = this.state.getResultSchema
-      .filter(schema => schema.properties)
-      .map(({ objectName, properties, type }) => ({
-        objectName: objectName,
-        columns: properties.map(col => ({ name: col.name })),
-        columnWidth: properties.map(col => ({
-          columnName: col.name,
-          width: 200
-        })),
-        type: type
-      }))[0];
+    const schemaProps = this.state.getResultSchema.find(
+      schema => schema.properties
+    );
 
-    const columns = resultObject.columns;
+    let resultObject;
 
-    const columnWidth = resultObject.columnWidth;
+    if (
+      schemaProps &&
+      schemaProps.properties &&
+      schemaProps.properties[0].parameters
+    ) {
+      resultObject = schemaProps.properties.map(
+        ({ name, parameters, type }) => ({
+          objectName: name,
+          columns: parameters.map(col => ({ name: col.name })),
+          columnWidth: parameters.map(col => ({
+            columnName: col.name,
+            width: 200
+          })),
+          type: type
+        })
+      )[0];
+    } else {
+      resultObject = this.state.getResultSchema
+        .filter(schema => schema.properties)
+        .map(({ objectName, properties, type }) => ({
+          objectName: objectName,
+          columns: properties.map(col => ({ name: col.name })),
+          columnWidth: properties.map(col => ({
+            columnName: col.name,
+            width: 200
+          })),
+          type: type
+        }))[0];
+    }
 
-    const rows = response[resultObject.objectName];
+    if (resultObject) {
+      const columns = resultObject.columns;
 
-    const type = resultObject.type;
+      const columnWidth = resultObject.columnWidth;
 
-    this.setState({
-      columns: columns,
-      columnWidth: columnWidth,
-      rows: type ? rows : [rows],
-      resultPaneOpen: true
-    });
+      const rows = schemaProps.properties[0].parameters
+        ? response[schemaProps.objectName][resultObject.objectName]
+        : response[resultObject.objectName];
+
+      const type = resultObject.type;
+
+      this.setState({
+        columns: columns,
+        columnWidth: columnWidth,
+        rows: type ? rows : [rows],
+        resultPaneOpen: true
+      });
+    }
   };
 
   handleResultPaneClose = () => {
@@ -294,7 +342,6 @@ class App extends React.Component {
           <Header
             toggleDrawer={this.toggleDrawer}
             menuOpen={this.menuOpen}
-            text={this.state.headerText}
             signedOn={signedOn}
             serverMenuOpen={serverMenuOpen}
           />

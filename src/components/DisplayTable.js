@@ -17,7 +17,9 @@ import {
   PagingState,
   SearchState,
   SelectionState,
-  IntegratedFiltering
+  IntegratedFiltering,
+  TreeDataState,
+  CustomTreeData
 } from "@devexpress/dx-react-grid";
 
 export default class DisplayTable extends React.Component {

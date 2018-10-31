@@ -1,4 +1,3 @@
-import servers from "./serversMock.json";
 const baseURL = "http://10.210.59.20";
 const webserverURL = "http://10.210.59.20:10086/web/services/webserv";
 const swaggerDirURL = "http://10.210.59.20:10086/swaggers/";
@@ -7,8 +6,7 @@ const Fetcher = () => {
   const authorize = (username, password) =>
     fetch(`${webserverURL}/validate/${username}/${password}`);
 
-  const getWebservers = () =>
-    fetch(`${webserverURL}/getAll`).then(res => res.json());
+  const getWebservers = () => fetch(`${webserverURL}/getAll`);
 
   const getWebserverInfo = webserver =>
     fetch(`${webserverURL}/${webserver}`).then(res => res.json());
@@ -22,15 +20,20 @@ const Fetcher = () => {
     );
 
   const getSwagger = (webserver, webservice) =>
-    fetch(`${swaggerDirURL}${webserver}_${webservice}.json`).then(res =>
-      res.json()
-    );
+    fetch(`${swaggerDirURL}${webserver}_${webservice}.json`);
 
   const doGetMethod = (url, signal) => fetch(url, { signal: signal });
 
-  const doPostMethod = (url, signal) => {
-    return Promise.reject("Not implemented");
-  };
+  const doPostMethod = (url, signal, body) =>
+    fetch(url, {
+      signal: signal,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
   const doPutMethod = () => {
     return Promise.reject("Not implemented");
   };

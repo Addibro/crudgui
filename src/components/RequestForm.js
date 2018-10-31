@@ -71,6 +71,21 @@ class RequestForm extends React.Component {
     this.props.handleParameterChange(e, paramIndex, nestedIndex);
   };
 
+  // TODO
+  getBody = () => {
+    let body = {};
+    this.props.parameters.forEach((prop, i) => {
+      if (!prop.type) {
+        body[prop.name] = {};
+      } else if (prop.type === "array") {
+        body[prop.name] = [];
+      } else {
+        body[prop.name] = this.props.parameterVariables[i].value;
+      }
+    });
+    return body;
+  };
+
   handleSubmit = async event => {
     event.preventDefault();
     this.AbortController = new window.AbortController();
@@ -87,17 +102,20 @@ class RequestForm extends React.Component {
         case "post":
           response = await Fetcher.doPostMethod(
             this.url.current.props.value,
-            this.AbortController.signal
+            this.AbortController.signal,
+            this.getBody()
           );
           break;
         default:
           this.setState({ fetchError: "Unknown method type" });
       }
+      console.log(response);
       if (!response.ok) {
         this.setState({ fetchError: response.statusText });
         return;
       }
       const json = await response.json();
+      console.log(json);
       this.handleClose();
       this.props.handleResponse(json);
     } catch (error) {
