@@ -106,6 +106,19 @@ class RequestForm extends React.Component {
             this.getBody()
           );
           break;
+        case "put":
+          response = await Fetcher.doPutMethod(
+            this.url.current.props.value,
+            this.AbortController.signal,
+            this.getBody()
+          );
+          break;
+        case "delete":
+          response = await Fetcher.doDelMethod(
+            this.url.current.props.value,
+            this.AbortController.signal
+          );
+          break;
         default:
           this.setState({ fetchError: "Unknown method type" });
       }

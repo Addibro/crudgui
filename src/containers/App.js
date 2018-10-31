@@ -56,7 +56,7 @@ class App extends React.Component {
     query: "",
     parameterVariables: [],
     headerText: "Webserver Explorer",
-    version: "0.2.5"
+    version: "0.3.0"
   };
 
   async componentDidMount() {

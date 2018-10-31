@@ -34,12 +34,21 @@ const Fetcher = () => {
       body: JSON.stringify(body)
     });
 
-  const doPutMethod = () => {
-    return Promise.reject("Not implemented");
-  };
-  const doDelMethod = () => {
-    return Promise.reject("Not implemented");
-  };
+  const doPutMethod = (url, signal, body) =>
+    fetch(url, {
+      signal: signal,
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+  const doDelMethod = (url, signal) =>
+    fetch(url, {
+      signal: signal,
+      method: "DELETE"
+    });
 
   return {
     getWebservers: getWebservers,
