@@ -16,15 +16,15 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 const drawerWidth = 240;
 
 const styles = theme => ({
-  root: {
-    flexGrow: 1
-  },
+  // root: {
+  //   flexGrow: 1
+  // },
   grow: {
     flexGrow: 1
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     }),
@@ -33,7 +33,7 @@ const styles = theme => ({
   appBarShift: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
     })
@@ -77,14 +77,11 @@ const Header = props => {
                 onClick={() => props.toggleDrawer()}
                 className={classes.menuButton}
               >
-                {props.serverMenuOpen ? (
-                  <ChevronLeftIcon />
-                ) : (
-                  <ChevronRightIcon />
-                )}
+                {props.serverMenuOpen ? <ChevronLeftIcon /> : <MenuIcon />}
               </IconButton>
             ) : null}
             <Typography
+              noWrap
               variant="h5"
               color="inherit"
               className={classNames(classes.grow, classes.header)}

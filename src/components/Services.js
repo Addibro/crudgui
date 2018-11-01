@@ -1,10 +1,11 @@
 import React from "react";
-import Typography from "@material-ui/core/Typography";
+import classNames from "classnames";
 import {
   withStyles,
   createMuiTheme,
   MuiThemeProvider
 } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import blue from "@material-ui/core/colors/blue";
@@ -15,6 +16,8 @@ import Avatar from "@material-ui/core/Avatar";
 import Grow from "@material-ui/core/Grow";
 import ListItem from "@material-ui/core/ListItem";
 
+const drawerWidth = 240;
+
 const theme = createMuiTheme({
   typography: {
     useNextVariants: true
@@ -23,8 +26,20 @@ const theme = createMuiTheme({
 
 const styles = theme => ({
   content: {
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing.unit * 8
+    flexGrow: 1,
+    padding: theme.spacing.unit * 8,
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    marginLeft: -drawerWidth
+  },
+  contentShift: {
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    }),
+    marginLeft: 0
   },
   welcome: {
     [theme.breakpoints.down("xs")]: {
@@ -35,9 +50,6 @@ const styles = theme => ({
     display: "flex",
     flexDirection: "column",
     padding: theme.spacing.unit
-  },
-  services: {
-    padding: theme.spacing.unit * 3
   },
   progress: {
     margin: theme.spacing.unit,
@@ -58,7 +70,11 @@ const Services = props => {
 
   return (
     <MuiThemeProvider theme={theme}>
-      <main className={classes.content}>
+      <main
+        className={classNames(classes.content, {
+          [classes.contentShift]: props.serverMenuOpen
+        })}
+      >
         <div className={classes.toolbar} />
         {props.selectedServer === "" ? (
           <React.Fragment>

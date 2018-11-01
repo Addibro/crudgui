@@ -122,13 +122,11 @@ class RequestForm extends React.Component {
         default:
           this.setState({ fetchError: "Unknown method type" });
       }
-      console.log(response);
       if (!response.ok) {
         this.setState({ fetchError: response.statusText });
         return;
       }
       const json = await response.json();
-      console.log(json);
       this.handleClose();
       this.props.handleResponse(json);
     } catch (error) {
